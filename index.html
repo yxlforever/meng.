@@ -260,7 +260,7 @@
     .thread-settings-page { display: none; width: min(100%, 760px); min-height: 100dvh; margin: 0 auto; padding: 0 max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left)); background: var(--paper); }
     .thread-settings-page.active { display: block; }
     .thread-settings-heading { position: relative; display: flex; align-items: center; justify-content: center; min-height: calc(58px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); }
-    .thread-settings-title { margin: 0; color: #252523; font-size: 16px; font-weight: 700; letter-spacing: -.02em; }
+    .thread-settings-title { margin: 0; color: #252523; font-family: "Great Vibes", cursive; font-size: 28px; font-weight: 400; letter-spacing: 0; line-height: 1; }
     .thread-settings-back, .thread-settings-save { position: absolute; bottom: 8px; height: 34px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
     .thread-settings-back { left: -15px; display: grid; width: 34px; place-items: center; padding: 0; border-radius: 50%; }
     .thread-settings-back:hover { background: #e8e8e5; }
@@ -467,7 +467,7 @@
   <main class="thread-settings-page" id="threadSettingsPage" aria-label="聊天设置页面">
     <header class="thread-settings-heading">
       <button class="thread-settings-back" id="threadSettingsBack" type="button" aria-label="返回聊天"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
-      <h1 class="thread-settings-title">聊天设置</h1>
+      <h1 class="thread-settings-title">Chat Settings</h1>
       <button class="thread-settings-save" id="threadSettingsSave" type="button">保存</button>
     </header>
     <section class="thread-settings-card" aria-label="聊天设置内容">
