@@ -6,14 +6,15 @@
   <meta name="theme-color" content="#f7f7f5" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Mono Desk" />
+  <meta name="apple-mobile-web-app-title" content="梦" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="application-name" content="Mono Desk" />
+  <meta name="application-name" content="梦" />
+  <link rel="apple-touch-icon" href="https://img.baibai.cv/f/WNnAi4/IMG_9974.jpeg" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
-  <title>Mono Desk</title>
+  <title>梦</title>
   <style>
     :root {
       color-scheme: light;
@@ -46,7 +47,7 @@
       width: min(100%, 760px);
       min-height: 100svh;
       margin: 0 auto;
-      padding: calc(22px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+      padding: calc(22px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
       display: flex;
       flex-direction: column;
       position: relative;
@@ -157,7 +158,7 @@
     .day:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
     .quick-apps { width: 100%; display: flex; justify-content: center; gap: 18px; margin-top: 22px; }
-    .bottom { margin-top: auto; display: flex; align-items: end; justify-content: center; }
+    .bottom { margin-top: auto; margin-bottom: 0; padding-bottom: 4px; display: flex; align-items: end; justify-content: center; }
     .apps { display: flex; align-items: end; gap: 18px; }
     .app { width: 61px; padding: 0; border: 0; background: transparent; color: var(--ink); text-align: center; cursor: pointer; transition: transform .2s ease; }
     .app:hover { transform: translateY(-3px); }
@@ -232,9 +233,11 @@
     .note-dialog-button.primary { border-color: #777772; background: #777772; color: #fff; }
     .note-dialog-button:hover { background: #dededb; }
     .note-dialog-button.primary:hover { background: #5f5f5b; }
-    .thread-page { display: none; width: min(100%, 760px); min-height: 100svh; margin: 0 auto; padding: 0 max(14px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); background: #f2f2f0; }
+    .thread-page { display: none; width: min(100%, 760px); min-height: 100svh; margin: 0 auto; padding: 0 0 calc(14px + env(safe-area-inset-bottom)); background: #f2f2f0; }
     .thread-page.active { display: flex; flex-direction: column; }
-    .thread-heading { position: relative; display: flex; align-items: center; justify-content: center; min-height: calc(56px + env(safe-area-inset-top)); padding: env(safe-area-inset-top) 48px 0; border-bottom: 1px solid rgba(210,210,207,.7); background: rgba(247,247,245,.78); box-shadow: 0 3px 15px rgba(40,40,38,.06); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+    .thread-heading { position: relative; display: flex; align-items: center; justify-content: center; min-height: calc(56px + env(safe-area-inset-top)); padding: env(safe-area-inset-top) max(48px, calc(48px + env(safe-area-inset-right))) 0 max(48px, calc(48px + env(safe-area-inset-left))); border-bottom: 1px solid rgba(210,210,207,.7); background: rgba(247,247,245,.78); box-shadow: 0 3px 15px rgba(40,40,38,.06); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+    .thread-back { position: absolute; left: max(5px, env(safe-area-inset-left)); bottom: 7px; display: grid; width: 34px; height: 34px; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; }
+    .thread-avatar { position: absolute; right: max(6px, env(safe-area-inset-right)); bottom: 7px; display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #d1d1ce; color: #8c8c88; }
     .thread-back { position: absolute; left: 5px; bottom: 7px; display: grid; width: 34px; height: 34px; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; }
     .thread-back:hover { background: #e5e5e2; }
     .thread-back svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -242,7 +245,7 @@
     .thread-avatar { position: absolute; right: 6px; bottom: 7px; display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #d1d1ce; color: #8c8c88; }
     .thread-avatar svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
     .thread-name { margin: 0; max-width: 70%; overflow: hidden; color: #252523; font-size: 14px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
-    .message-area { display: flex; flex: 1; flex-direction: column; gap: 12px; padding: 25px 6px 18px; overflow-y: auto; }
+    .message-area { display: flex; flex: 1; flex-direction: column; gap: 12px; padding: 25px 6px 110px; overflow-y: auto; }
     .message { display: flex; max-width: 82%; align-items: flex-end; gap: 8px; }
     .message.incoming { align-self: flex-start; }
     .message.outgoing { align-self: flex-end; flex-direction: row-reverse; }
@@ -250,10 +253,72 @@
     .message-avatar svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
     .message-bubble { padding: 10px 13px; border-radius: 6px 15px 15px 15px; background: #fff; color: #333331; font-size: 14px; line-height: 1.5; box-shadow: 0 2px 8px rgba(30,30,28,.05); }
     .message.outgoing .message-bubble { border-radius: 15px 6px 15px 15px; background: #d8d8d5; }
-    .message-form { display: flex; align-items: center; gap: 8px; padding: 10px 8px; border-top: 1px solid #dededb; }
-    .message-input { min-width: 0; flex: 1; padding: 10px 13px; border: 1px solid #dededb; border-radius: 19px; outline: 0; background: #fff; color: var(--ink); font-size: 14px; }
-    .message-input:focus { border-color: #aaa; }
-    .message-send { width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: #777772; color: #fff; cursor: pointer; }
+    .message-form {
+      position: sticky;
+      bottom: calc(10px + env(safe-area-inset-bottom));
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      margin: 0 6px;
+      padding: 12px 12px 12px 10px;
+      border: 1px solid rgba(255,255,255,.46);
+      border-radius: 26px;
+      background: rgba(255,255,255,.42);
+      box-shadow: 0 12px 30px rgba(28,28,26,.12);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+    }
+    .message-tools { display: flex; align-items: center; gap: 8px; }
+    .message-tool,
+    .message-send {
+      display: grid;
+      place-items: center;
+      border: 0;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease, box-shadow .18s ease, color .18s ease;
+    }
+    .message-tool {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,.5);
+      color: #41413d;
+    }
+    .message-tool:hover,
+    .message-send:hover { transform: translateY(-1px); }
+    .message-tool:focus-visible,
+    .message-send:focus-visible,
+    .message-input:focus-visible { outline: 2px solid rgba(22,22,22,.4); outline-offset: 2px; }
+    .message-tool svg,
+    .message-send svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .message-input {
+      min-width: 0;
+      width: 100%;
+      height: 42px;
+      padding: 0 16px;
+      border: 1px solid rgba(245,245,242,.9);
+      border-radius: 22px;
+      outline: 0;
+      background: rgba(255,255,255,.8);
+      color: var(--ink);
+      font-size: 14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+    }
+    .message-input::placeholder { color: #9b9b95; }
+    .message-input:focus { border-color: rgba(130,130,124,.6); background: rgba(255,255,255,.92); }
+    .message-send {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #2a2a29 0%, #111110 100%);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(17,17,16,.24);
+    }
+    .message-send:hover { box-shadow: 0 10px 20px rgba(17,17,16,.3); }
+    .message-send:active { transform: translateY(0); }
     body.show-settings .home-shell, body.show-chat .home-shell, body.show-thread .home-shell, body.show-thread #chatPage { display: none; }
 
     @media (min-width: 600px) { .notes-card { width: calc(100% + 84px); margin-right: -42px; margin-left: -42px; padding-right: 42px; padding-left: 42px; } }
@@ -328,8 +393,16 @@
     </header>
     <section class="message-area" id="messageArea" aria-label="聊天消息"></section>
     <form class="message-form" id="messageForm">
+      <div class="message-tools" aria-label="聊天工具">
+        <button class="message-tool" type="button" aria-label="选择照片">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 6.8A2.3 2.3 0 0 1 6.8 4.5h10.4a2.3 2.3 0 0 1 2.3 2.3v10.4a2.3 2.3 0 0 1-2.3 2.3H6.8a2.3 2.3 0 0 1-2.3-2.3V6.8Z"/><path d="m8.2 13.8 2.2-2.4c.4-.4 1-.4 1.4 0l1.2 1.2 1.7-1.9c.4-.4 1-.4 1.4 0L19 14.1"/><circle cx="9.2" cy="9" r="1.1"/></svg>
+        </button>
+        <button class="message-tool" type="button" aria-label="选择表情">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><path d="M9 11h.01M15 11h.01"/><path d="M9 15c.7.9 1.7 1.4 3 1.4s2.3-.5 3-1.4"/></svg>
+        </button>
+      </div>
       <input class="message-input" id="messageInput" type="text" placeholder="输入消息" autocomplete="off" />
-      <button class="message-send" type="submit" aria-label="发送消息">↑</button>
+      <button class="message-send" type="submit" aria-label="发送消息"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 14-7-4 14-3.5-5L5 12Z"/></svg></button>
     </form>
   </main>
   <main class="home-shell" aria-label="Mono Desk 个人主页">

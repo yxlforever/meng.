@@ -1,7 +1,7 @@
 {
-  "name": "Mono Desk",
-  "short_name": "Mono Desk",
-  "description": "Mono Desk 个人主页",
+  "name": "梦",
+  "short_name": "梦",
+  "description": "梦个人主页",
   "start_url": "./index.html",
   "scope": "./",
   "display": "fullscreen",
@@ -10,9 +10,9 @@
   "theme_color": "#f7f7f5",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='44' fill='%23f7f7f5'/%3E%3Ccircle cx='96' cy='82' r='44' fill='%23161616' fill-opacity='.08'/%3E%3Cpath d='M72 127c8-10 17-15 24-15s16 5 24 15' fill='none' stroke='%23161616' stroke-width='10' stroke-linecap='round'/%3E%3Ctext x='96' y='92' text-anchor='middle' font-size='46' font-family='Arial, sans-serif' fill='%23161616'%3EM%3C/text%3E%3C/svg%3E",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
+      "src": "https://img.baibai.cv/f/WNnAi4/IMG_9974.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     }
   ]
