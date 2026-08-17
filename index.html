@@ -25,11 +25,19 @@
       --white: #fff;
       --panel: rgba(255, 255, 255, .97);
       --shadow: 0 18px 48px rgba(21, 21, 19, .15);
+      --app-font-size: 16px;
     }
 
-    * { box-sizing: border-box; }
-    html, body { min-height: 100%; }
+    *, *::before, *::after { box-sizing: inherit; }
+    html {
+      min-height: 100%;
+      min-height: calc(100% + env(safe-area-inset-top, 40px));
+      box-sizing: border-box;
+      background: var(--paper);
+      font-size: var(--app-font-size);
+    }
     body {
+      min-height: 100%;
       margin: 0;
       min-height: 100svh;
       overflow: hidden;
@@ -40,8 +48,6 @@
       text-rendering: optimizeLegibility;
     }
     button, input, textarea { font: inherit; }
-
-    html { background: var(--paper); }
 
     .home-shell {
       width: min(100%, 760px);
