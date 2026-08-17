@@ -10,6 +10,9 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="application-name" content="Mono Desk" />
   <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
   <title>Mono Desk</title>
   <style>
     :root {
@@ -181,6 +184,80 @@
       backdrop-filter: blur(20px);
     }
 
+    .settings-page {
+      display: none;
+      width: min(100%, 760px);
+      min-height: 100svh;
+      margin: 0 auto;
+      padding: calc(22px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+      background: var(--paper);
+    }
+    .settings-page.active { display: block; }
+    .settings-heading { display: flex; align-items: center; gap: 16px; width: 100%; }
+    .settings-heading::before,
+    .settings-heading::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+    .settings-title { margin: 0; color: var(--ink); font-family: "Great Vibes", cursive; font-size: 36px; font-weight: 400; line-height: 1; white-space: nowrap; }
+    .settings-card { width: 100%; min-height: 210px; margin-top: 28px; border: 1px solid #e5e5e0; border-radius: 26px; background: rgba(255,255,255,.9); box-shadow: 0 14px 34px rgba(31,31,29,.06); }
+    .chat-page { display: none; width: min(100%, 760px); min-height: 100svh; margin: 0 auto; padding: calc(22px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); background: var(--paper); }
+    .chat-page.active { display: block; }
+    .chat-heading { display: flex; align-items: center; gap: 16px; width: 100%; }
+    .chat-heading::before, .chat-heading::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+    .chat-title { margin: 0; color: var(--ink); font-family: "Great Vibes", cursive; font-size: 36px; font-weight: 400; line-height: 1; white-space: nowrap; cursor: pointer; }
+    .chat-title:focus-visible { outline: 2px solid var(--ink); outline-offset: 5px; border-radius: 6px; }
+    .notes-card { width: calc(100% + 40px); min-height: calc(100svh - 96px); margin: 28px -20px calc(-20px - env(safe-area-inset-bottom)); padding: 24px 22px; border-radius: 25px 25px 0 0; background: var(--white); box-shadow: 0 -1px 0 rgba(20,20,20,.05), 0 -16px 34px rgba(31,31,29,.05); }
+    .notes-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .notes-title { margin: 0; color: var(--ink); font-size: 19px; font-weight: 750; letter-spacing: -.025em; }
+    .notes-heart { display: grid; width: 28px; height: 28px; place-items: center; padding: 0; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
+    .notes-heart svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s ease, fill .2s ease; }
+    .notes-heart:hover svg, .notes-heart:focus-visible svg { transform: scale(1.12); }
+    .notes-heart:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 50%; }
+    .notes-heart.active svg { fill: currentColor; }
+    .conversation-list { display: grid; gap: 8px; margin-top: 17px; }
+    .conversation-item { display: flex; align-items: center; gap: 13px; width: 100%; padding: 10px 4px; border: 0; border-radius: 14px; background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
+    .conversation-item:hover { background: #f4f4f2; }
+    .conversation-avatar { display: grid; width: 48px; height: 48px; flex: 0 0 48px; place-items: center; border-radius: 50%; background: #d3d3d0; color: #8c8c88; }
+    .conversation-avatar svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .conversation-name { min-width: 0; overflow: hidden; font-size: 15px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .note-modal { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 24px; background: rgba(28,28,27,.32); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity .22s ease; }
+    .note-modal.open { opacity: 1; pointer-events: auto; }
+    .note-dialog { width: min(100%, 360px); padding: 28px 26px 22px; border: 1px solid #e4e4df; border-radius: 20px; background: #fff; box-shadow: 0 20px 52px rgba(21,21,19,.18); transform: translateY(10px) scale(.98); transition: transform .22s ease; }
+    .note-modal.open .note-dialog { transform: translateY(0) scale(1); }
+    .note-dialog-title { margin: 0; color: #252523; font-size: 19px; font-weight: 650; letter-spacing: -.025em; text-align: center; }
+    .note-dialog-copy { margin: 9px 0 22px; color: #8a8a85; font-size: 12px; line-height: 1.55; text-align: center; }
+    .note-name-input { width: 100%; padding: 10px 2px; border: 0; border-bottom: 1px solid #cfcfca; border-radius: 0; outline: 0; background: transparent; color: #30302e; font-size: 14px; }
+    .note-name-input::placeholder { color: #a5a5a0; }
+    .note-name-input:focus { border-color: #686863; }
+    .note-dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 24px; }
+    .note-dialog-button { min-width: 70px; padding: 8px 14px; border: 1px solid #c9c9c4; border-radius: 8px; background: #ededeb; color: #696964; font-size: 12px; cursor: pointer; }
+    .note-dialog-button.primary { border-color: #777772; background: #777772; color: #fff; }
+    .note-dialog-button:hover { background: #dededb; }
+    .note-dialog-button.primary:hover { background: #5f5f5b; }
+    .thread-page { display: none; width: min(100%, 760px); min-height: 100svh; margin: 0 auto; padding: 0 max(14px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); background: #f2f2f0; }
+    .thread-page.active { display: flex; flex-direction: column; }
+    .thread-heading { position: relative; display: flex; align-items: center; justify-content: center; min-height: calc(56px + env(safe-area-inset-top)); padding: env(safe-area-inset-top) 48px 0; border-bottom: 1px solid rgba(210,210,207,.7); background: rgba(247,247,245,.78); box-shadow: 0 3px 15px rgba(40,40,38,.06); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+    .thread-back { position: absolute; left: 5px; bottom: 7px; display: grid; width: 34px; height: 34px; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; }
+    .thread-back:hover { background: #e5e5e2; }
+    .thread-back svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .thread-person { display: flex; align-items: center; justify-content: center; gap: 0; width: 100%; }
+    .thread-avatar { position: absolute; right: 6px; bottom: 7px; display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #d1d1ce; color: #8c8c88; }
+    .thread-avatar svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .thread-name { margin: 0; max-width: 70%; overflow: hidden; color: #252523; font-size: 14px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+    .message-area { display: flex; flex: 1; flex-direction: column; gap: 12px; padding: 25px 6px 18px; overflow-y: auto; }
+    .message { display: flex; max-width: 82%; align-items: flex-end; gap: 8px; }
+    .message.incoming { align-self: flex-start; }
+    .message.outgoing { align-self: flex-end; flex-direction: row-reverse; }
+    .message-avatar { display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; border-radius: 50%; background: #d1d1ce; color: #8c8c88; }
+    .message-avatar svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .message-bubble { padding: 10px 13px; border-radius: 6px 15px 15px 15px; background: #fff; color: #333331; font-size: 14px; line-height: 1.5; box-shadow: 0 2px 8px rgba(30,30,28,.05); }
+    .message.outgoing .message-bubble { border-radius: 15px 6px 15px 15px; background: #d8d8d5; }
+    .message-form { display: flex; align-items: center; gap: 8px; padding: 10px 8px; border-top: 1px solid #dededb; }
+    .message-input { min-width: 0; flex: 1; padding: 10px 13px; border: 1px solid #dededb; border-radius: 19px; outline: 0; background: #fff; color: var(--ink); font-size: 14px; }
+    .message-input:focus { border-color: #aaa; }
+    .message-send { width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: #777772; color: #fff; cursor: pointer; }
+    body.show-settings .home-shell, body.show-chat .home-shell, body.show-thread .home-shell, body.show-thread #chatPage { display: none; }
+
+    @media (min-width: 600px) { .notes-card { width: calc(100% + 84px); margin-right: -42px; margin-left: -42px; padding-right: 42px; padding-left: 42px; } }
+
     .panel.open { transform: translate(-50%, 0); }
     .panel-head { display: flex; align-items: center; justify-content: space-between; }
     .panel-title { margin: 0; font-size: 17px; font-weight: 650; }
@@ -213,6 +290,48 @@
   </style>
 </head>
 <body>
+  <main class="settings-page" id="settingsPage" aria-label="设置页面">
+    <header class="settings-heading">
+      <h1 class="settings-title">my love</h1>
+    </header>
+    <section class="settings-card" aria-label="设置内容"></section>
+  </main>
+  <main class="chat-page" id="chatPage" aria-label="聊天页面">
+    <header class="chat-heading">
+      <h1 class="chat-title" id="chatBack" role="button" tabindex="0" aria-label="返回主页">my love</h1>
+    </header>
+    <section class="notes-card" aria-label="Notes">
+      <div class="notes-head">
+        <h2 class="notes-title">Notes</h2>
+        <button class="notes-heart" type="button" aria-label="添加备注">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.7c0 5.2-8.8 10.1-8.8 10.1S3.2 13.9 3.2 8.7A4.7 4.7 0 0 1 12 6.2a4.7 4.7 0 0 1 8.8 2.5Z"/></svg>
+        </button>
+      </div>
+      <div class="conversation-list" id="conversationList" aria-label="对话列表"></div>
+    </section>
+  </main>
+  <div class="note-modal" id="noteModal" role="dialog" aria-modal="true" aria-labelledby="noteDialogTitle" aria-hidden="true">
+    <form class="note-dialog" id="noteForm">
+      <h2 class="note-dialog-title" id="noteDialogTitle">添加备注</h2>
+      <p class="note-dialog-copy">为这段对话留下一个特别的名字。</p>
+      <input class="note-name-input" id="noteNameInput" type="text" maxlength="30" placeholder="填写备注名" autocomplete="off" required />
+      <div class="note-dialog-actions">
+        <button class="note-dialog-button" id="noteCancel" type="button">取消</button>
+        <button class="note-dialog-button primary" type="submit">确认</button>
+      </div>
+    </form>
+  </div>
+  <main class="thread-page" id="threadPage" aria-label="对话页面">
+    <header class="thread-heading">
+      <button class="thread-back" id="threadBack" type="button" aria-label="返回 Notes"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button>
+      <div class="thread-person"><span class="thread-avatar" id="threadAvatar"></span><h1 class="thread-name" id="threadName">对话</h1></div>
+    </header>
+    <section class="message-area" id="messageArea" aria-label="聊天消息"></section>
+    <form class="message-form" id="messageForm">
+      <input class="message-input" id="messageInput" type="text" placeholder="输入消息" autocomplete="off" />
+      <button class="message-send" type="submit" aria-label="发送消息">↑</button>
+    </form>
+  </main>
   <main class="home-shell" aria-label="Mono Desk 个人主页">
     <section class="profile-wrap" aria-label="个人资料">
       <article class="profile-card">
@@ -253,7 +372,7 @@
     </section>
 
     <nav class="quick-apps" aria-label="常用应用">
-      <button class="app" type="button" aria-label="聊天">
+      <button class="app" id="chatApp" type="button" aria-label="聊天">
         <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 5.5h14v10H9.5L6 18v-2.5H5v-10Z"/><path d="M8.5 10h7M8.5 13h4"/></svg></span>
         <span class="app-name">聊天</span>
       </button>
@@ -291,6 +410,42 @@
   </main>
 
   <script>
+    const DATABASE_NAME = 'mono-desk';
+    const STORE_NAME = 'preferences';
+    const STATE_ID = 'current';
+    const defaultState = {
+      profileName: '사랑해요',
+      profileHandle: '@mono.space',
+      profileBio: '好好生活，慢慢相遇。',
+      activeDay: '1',
+      toggles: {},
+      avatar: null,
+      conversations: []
+    };
+    const state = { ...defaultState };
+    let database;
+
+    const openDatabase = () => new Promise((resolve, reject) => {
+      const request = indexedDB.open(DATABASE_NAME, 1);
+      request.onupgradeneeded = () => request.result.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      request.onsuccess = () => {
+        database = request.result;
+        resolve();
+      };
+      request.onerror = () => reject(request.error);
+    });
+
+    const readState = () => new Promise((resolve, reject) => {
+      const request = database.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get(STATE_ID);
+      request.onsuccess = () => resolve(request.result?.value || {});
+      request.onerror = () => reject(request.error);
+    });
+
+    const saveState = () => {
+      if (!database) return;
+      database.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).put({ id: STATE_ID, value: state });
+    };
+
     const panels = [...document.querySelectorAll('.panel')];
     const closePanels = () => panels.forEach(panel => {
       panel.classList.remove('open');
@@ -304,10 +459,123 @@
     };
 
     document.querySelectorAll('[data-panel]').forEach(button => button.addEventListener('click', () => openPanel(button.dataset.panel)));
+
+    document.getElementById('settingsApp').addEventListener('click', () => {
+      document.body.classList.add('show-settings');
+      document.getElementById('settingsPage').classList.add('active');
+    });
+    document.getElementById('chatApp').addEventListener('click', () => {
+      document.body.classList.add('show-chat');
+      document.getElementById('chatPage').classList.add('active');
+    });
+    const returnHome = () => {
+      document.body.classList.remove('show-chat');
+      document.getElementById('chatPage').classList.remove('active');
+    };
+    const chatBack = document.getElementById('chatBack');
+    chatBack.addEventListener('click', returnHome);
+    const noteModal = document.getElementById('noteModal');
+    const noteForm = document.getElementById('noteForm');
+    const noteNameInput = document.getElementById('noteNameInput');
+    const conversationList = document.getElementById('conversationList');
+    const defaultAvatar = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 20c.7-3.6 3.1-5.4 6.5-5.4s5.8 1.8 6.5 5.4"/></svg>';
+    const renderConversations = () => {
+      conversationList.replaceChildren();
+      state.conversations.forEach(conversation => {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'conversation-item';
+        item.setAttribute('aria-label', `打开与${conversation.name}的对话`);
+        item.innerHTML = `<span class="conversation-avatar">${defaultAvatar}</span><span class="conversation-name"></span>`;
+        item.querySelector('.conversation-name').textContent = conversation.name;
+        item.addEventListener('click', () => openThread(conversation));
+        conversationList.append(item);
+      });
+    };
+    const threadPage = document.getElementById('threadPage');
+    const threadName = document.getElementById('threadName');
+    const threadAvatar = document.getElementById('threadAvatar');
+    const messageArea = document.getElementById('messageArea');
+    const messageInput = document.getElementById('messageInput');
+    const renderMessages = conversation => {
+      messageArea.replaceChildren();
+      (conversation.messages || []).forEach(message => {
+        const item = document.createElement('div');
+        item.className = `message ${message.mine ? 'outgoing' : 'incoming'}`;
+        item.innerHTML = `<span class="message-avatar">${defaultAvatar}</span><span class="message-bubble"></span>`;
+        item.querySelector('.message-bubble').textContent = message.text;
+        messageArea.append(item);
+      });
+      messageArea.scrollTop = messageArea.scrollHeight;
+    };
+    const openThread = conversation => {
+      state.currentConversationId = conversation.id;
+      threadName.textContent = conversation.name;
+      threadAvatar.innerHTML = defaultAvatar;
+      renderMessages(conversation);
+      document.body.classList.add('show-thread');
+      threadPage.classList.add('active');
+      messageInput.focus();
+    };
+    const closeThread = () => {
+      document.body.classList.remove('show-thread');
+      threadPage.classList.remove('active');
+    };
+    document.getElementById('threadBack').addEventListener('click', closeThread);
+    document.getElementById('messageForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const text = messageInput.value.trim();
+      const conversation = state.conversations.find(item => item.id === state.currentConversationId);
+      if (!text || !conversation) return;
+      conversation.messages = conversation.messages || [];
+      conversation.messages.push({ text, mine: true });
+      messageInput.value = '';
+      renderMessages(conversation);
+      saveState();
+    });
+    const closeNoteModal = () => {
+      noteModal.classList.remove('open');
+      noteModal.setAttribute('aria-hidden', 'true');
+      noteNameInput.value = '';
+    };
+    document.querySelector('.notes-heart').addEventListener('click', () => {
+      noteModal.classList.add('open');
+      noteModal.setAttribute('aria-hidden', 'false');
+      noteNameInput.focus();
+    });
+    document.getElementById('noteCancel').addEventListener('click', closeNoteModal);
+    noteModal.addEventListener('click', event => {
+      if (event.target === noteModal) closeNoteModal();
+    });
+    noteForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const name = noteNameInput.value.trim();
+      if (!name) return;
+      state.conversations.push({ id: crypto.randomUUID(), name, messages: [] });
+      renderConversations();
+      saveState();
+      closeNoteModal();
+    });
+    chatBack.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        returnHome();
+      }
+    });
     document.querySelectorAll('.close').forEach(button => button.addEventListener('click', closePanels));
-    document.querySelectorAll('.toggle').forEach(toggle => toggle.addEventListener('click', () => toggle.classList.toggle('on')));
+    document.querySelectorAll('.toggle').forEach((toggle, index) => {
+      const toggleKey = toggle.closest('.panel').id + '-' + index;
+      toggle.dataset.storageKey = toggleKey;
+      toggle.classList.toggle('on', state.toggles[toggleKey] ?? toggle.classList.contains('on'));
+      toggle.addEventListener('click', () => {
+        toggle.classList.toggle('on');
+        state.toggles[toggleKey] = toggle.classList.contains('on');
+        saveState();
+      });
+    });
 
     document.querySelectorAll('[contenteditable="true"]').forEach(field => {
+      field.textContent = state[field.id];
       field.addEventListener('keydown', event => {
         if (event.key === 'Enter') {
           event.preventDefault();
@@ -316,34 +584,64 @@
       });
       field.addEventListener('blur', () => {
         const fallback = field.id === 'profileName'
-          ? '사랑해요'
+          ? defaultState.profileName
           : field.id === 'profileHandle'
-            ? '@mono.space'
-            : '好好生活，慢慢相遇。';
+            ? defaultState.profileHandle
+            : defaultState.profileBio;
         field.textContent = field.textContent.trim() || fallback;
+        state[field.id] = field.textContent;
+        saveState();
       });
     });
 
-    document.querySelectorAll('.day').forEach(day => day.addEventListener('click', () => {
-      document.querySelectorAll('.day').forEach(item => item.classList.remove('active'));
-      day.classList.add('active');
-    }));
+    document.querySelectorAll('.day').forEach(day => {
+      day.classList.toggle('active', day.dataset.day === state.activeDay);
+      day.addEventListener('click', () => {
+        document.querySelectorAll('.day').forEach(item => item.classList.remove('active'));
+        day.classList.add('active');
+        state.activeDay = day.dataset.day;
+        saveState();
+      });
+    });
 
     const avatarInput = document.getElementById('avatarInput');
     const avatarButton = document.getElementById('avatarButton');
     const avatarImage = document.getElementById('avatarImage');
+    const setAvatar = avatar => {
+      avatarImage.src = URL.createObjectURL(avatar);
+      avatarImage.classList.add('has-image');
+      state.avatar = avatar;
+      saveState();
+    };
     avatarButton.addEventListener('click', () => avatarInput.click());
     avatarInput.addEventListener('change', event => {
       const [file] = event.target.files;
       if (!file) return;
-      const reader = new FileReader();
-      reader.addEventListener('load', () => {
-        avatarImage.src = reader.result;
-        avatarImage.classList.add('has-image');
-      });
-      reader.readAsDataURL(file);
+      setAvatar(file);
     });
 
+    const applySavedState = savedState => {
+      Object.assign(state, savedState);
+      document.querySelectorAll('[contenteditable="true"]').forEach(field => {
+        field.textContent = state[field.id];
+      });
+      document.querySelectorAll('.day').forEach(day => {
+        day.classList.toggle('active', day.dataset.day === state.activeDay);
+      });
+      document.querySelectorAll('.toggle').forEach(toggle => {
+        const toggleKey = toggle.dataset.storageKey;
+        toggle.classList.toggle('on', state.toggles[toggleKey] ?? toggle.classList.contains('on'));
+      });
+      if (state.avatar) {
+        avatarImage.src = URL.createObjectURL(state.avatar);
+        avatarImage.classList.add('has-image');
+      }
+      renderConversations();
+    };
+
+    openDatabase().then(readState).then(applySavedState).catch(error => {
+      console.warn('无法初始化浏览器数据库，将不会保存数据。', error);
+    });
   </script>
 </body>
 </html>
