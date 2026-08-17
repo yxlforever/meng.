@@ -39,8 +39,9 @@
     body {
       min-height: 100%;
       margin: 0;
-      min-height: 100svh;
-      overflow: hidden;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      overflow-y: auto;
       background: var(--paper);
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -51,7 +52,7 @@
 
     .home-shell {
       width: min(100%, 760px);
-      min-height: 100svh;
+      min-height: 100dvh;
       margin: 0 auto;
       padding: calc(22px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
       display: flex;
@@ -194,7 +195,7 @@
     .settings-page {
       display: none;
       width: min(100%, 760px);
-      min-height: 100svh;
+      min-height: 100dvh;
       margin: 0 auto;
       padding: calc(22px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
       background: var(--paper);
@@ -205,13 +206,13 @@
     .settings-heading::after { content: ""; height: 1px; flex: 1; background: var(--line); }
     .settings-title { margin: 0; color: var(--ink); font-family: "Great Vibes", cursive; font-size: 36px; font-weight: 400; line-height: 1; white-space: nowrap; }
     .settings-card { width: 100%; min-height: 210px; margin-top: 28px; border: 1px solid #e5e5e0; border-radius: 26px; background: rgba(255,255,255,.9); box-shadow: 0 14px 34px rgba(31,31,29,.06); }
-    .chat-page { display: none; width: min(100%, 760px); min-height: 100svh; margin: 0 auto; padding: calc(22px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); background: var(--paper); }
+    .chat-page { display: none; width: min(100%, 760px); min-height: 100dvh; margin: 0 auto; padding: calc(22px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); background: var(--paper); }
     .chat-page.active { display: block; }
     .chat-heading { display: flex; align-items: center; gap: 16px; width: 100%; }
     .chat-heading::before, .chat-heading::after { content: ""; height: 1px; flex: 1; background: var(--line); }
     .chat-title { margin: 0; color: var(--ink); font-family: "Great Vibes", cursive; font-size: 36px; font-weight: 400; line-height: 1; white-space: nowrap; cursor: pointer; }
     .chat-title:focus-visible { outline: 2px solid var(--ink); outline-offset: 5px; border-radius: 6px; }
-    .notes-card { width: calc(100% + 40px); min-height: calc(100svh - 96px); margin: 28px -20px calc(-20px - env(safe-area-inset-bottom)); padding: 24px 22px; border-radius: 25px 25px 0 0; background: var(--white); box-shadow: 0 -1px 0 rgba(20,20,20,.05), 0 -16px 34px rgba(31,31,29,.05); }
+    .notes-card { width: calc(100% + 40px); min-height: calc(100dvh - 96px); margin: 28px -20px calc(-20px - env(safe-area-inset-bottom)); padding: 24px 22px; border-radius: 25px 25px 0 0; background: var(--white); box-shadow: 0 -1px 0 rgba(20,20,20,.05), 0 -16px 34px rgba(31,31,29,.05); }
     .notes-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
     .notes-title { margin: 0; color: var(--ink); font-size: 19px; font-weight: 750; letter-spacing: -.025em; }
     .notes-heart { display: grid; width: 28px; height: 28px; place-items: center; padding: 0; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
@@ -239,7 +240,7 @@
     .note-dialog-button.primary { border-color: #777772; background: #777772; color: #fff; }
     .note-dialog-button:hover { background: #dededb; }
     .note-dialog-button.primary:hover { background: #5f5f5b; }
-    .thread-page { display: none; width: min(100%, 760px); min-height: 100svh; margin: 0 auto; padding: 0 0 calc(14px + env(safe-area-inset-bottom)); background: #f2f2f0; }
+    .thread-page { display: none; width: min(100%, 760px); min-height: 100dvh; margin: 0 auto; padding: 0 0 calc(14px + env(safe-area-inset-bottom)); background: #f2f2f0; }
     .thread-page.active { display: flex; flex-direction: column; }
     .thread-heading { position: relative; display: flex; align-items: center; justify-content: center; min-height: calc(56px + env(safe-area-inset-top)); padding: env(safe-area-inset-top) max(48px, calc(48px + env(safe-area-inset-right))) 0 max(48px, calc(48px + env(safe-area-inset-left))); border-bottom: 1px solid rgba(210,210,207,.7); background: rgba(247,247,245,.78); box-shadow: 0 3px 15px rgba(40,40,38,.06); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
     .thread-back { position: absolute; left: max(5px, env(safe-area-inset-left)); bottom: 7px; display: grid; width: 34px; height: 34px; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; }
@@ -249,8 +250,32 @@
     .thread-back svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .thread-person { display: flex; align-items: center; justify-content: center; gap: 0; width: 100%; }
     .thread-avatar { position: absolute; right: 6px; bottom: 7px; display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #d1d1ce; color: #8c8c88; }
+    .thread-avatar { padding: 0; border: 0; cursor: pointer; transition: transform .18s ease, background .18s ease; }
+    .thread-avatar:hover { background: #c5c5c1; transform: scale(1.04); }
+    .thread-avatar:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
     .thread-avatar svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
     .thread-name { margin: 0; max-width: 70%; overflow: hidden; color: #252523; font-size: 14px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+    .thread-settings-page { display: none; width: min(100%, 760px); min-height: 100dvh; margin: 0 auto; padding: 0 max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left)); background: var(--paper); }
+    .thread-settings-page.active { display: block; }
+    .thread-settings-heading { position: relative; display: flex; align-items: center; justify-content: center; min-height: calc(58px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); }
+    .thread-settings-title { margin: 0; color: #252523; font-size: 16px; font-weight: 700; letter-spacing: -.02em; }
+    .thread-settings-back, .thread-settings-save { position: absolute; bottom: 8px; height: 34px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
+    .thread-settings-back { left: -15px; display: grid; width: 34px; place-items: center; padding: 0; border-radius: 50%; }
+    .thread-settings-back:hover { background: #e8e8e5; }
+    .thread-settings-back svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .thread-settings-save { right: -8px; padding: 0 8px; border-radius: 9px; font-size: 14px; font-weight: 700; }
+    .thread-settings-save:hover { background: #e8e8e5; }
+    .thread-settings-card { width: calc(100% + 40px); min-height: calc(100dvh - 58px - env(safe-area-inset-top)); margin: 0 -20px; padding: 30px 22px calc(30px + env(safe-area-inset-bottom)); border-radius: 25px 25px 0 0; background: var(--white); box-shadow: 0 -1px 0 rgba(20,20,20,.05), 0 -16px 34px rgba(31,31,29,.05); }
+    .thread-settings-profile { display: grid; justify-items: center; gap: 11px; padding: 5px 0 28px; }
+    .thread-settings-avatar { display: grid; width: 74px; height: 74px; place-items: center; border: 0; border-radius: 50%; background: #d1d1ce; color: #858580; }
+    .thread-settings-avatar svg { width: 43px; height: 43px; fill: none; stroke: currentColor; stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; }
+    .thread-settings-name { margin: 0; color: #292927; font-size: 18px; font-weight: 750; }
+    .thread-settings-group { overflow: hidden; border: 1px solid #e8e8e4; border-radius: 17px; background: #fafaf8; }
+    .thread-settings-row { display: grid; grid-template-columns: 82px 1fr; align-items: center; min-height: 55px; padding: 0 16px; }
+    .thread-settings-label { color: #4e4e4a; font-size: 14px; font-weight: 650; }
+    .thread-settings-input { min-width: 0; width: 100%; padding: 10px 0; border: 0; outline: 0; background: transparent; color: #292927; font-size: 14px; text-align: right; }
+    .thread-settings-input::placeholder { color: #aaa9a4; }
+    .thread-settings-hint { margin: 11px 5px 0; color: #999994; font-size: 12px; line-height: 1.55; }
     .message-area { display: flex; flex: 1; flex-direction: column; gap: 12px; padding: 25px 6px 110px; overflow-y: auto; }
     .message { display: flex; max-width: 82%; align-items: flex-end; gap: 8px; }
     .message.incoming { align-self: flex-start; }
@@ -325,9 +350,14 @@
     }
     .message-send:hover { box-shadow: 0 10px 20px rgba(17,17,16,.3); }
     .message-send:active { transform: translateY(0); }
-    body.show-settings .home-shell, body.show-chat .home-shell, body.show-thread .home-shell, body.show-thread #chatPage { display: none; }
+    body.show-settings .home-shell, body.show-chat .home-shell, body.show-thread .home-shell, body.show-thread #chatPage, body.show-thread-settings .home-shell, body.show-thread-settings #chatPage, body.show-thread-settings #threadPage { display: none; }
 
-    @media (min-width: 600px) { .notes-card { width: calc(100% + 84px); margin-right: -42px; margin-left: -42px; padding-right: 42px; padding-left: 42px; } }
+    @media (min-width: 600px) {
+      .notes-card { width: calc(100% + 84px); margin-right: -42px; margin-left: -42px; padding-right: 42px; padding-left: 42px; }
+      .thread-settings-card { width: calc(100% + 84px); margin-right: -42px; margin-left: -42px; padding-right: 42px; padding-left: 42px; }
+      .thread-settings-back { left: -37px; }
+      .thread-settings-save { right: -34px; }
+    }
 
     .panel.open { transform: translate(-50%, 0); }
     .panel-head { display: flex; align-items: center; justify-content: space-between; }
@@ -395,7 +425,7 @@
   <main class="thread-page" id="threadPage" aria-label="对话页面">
     <header class="thread-heading">
       <button class="thread-back" id="threadBack" type="button" aria-label="返回 Notes"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button>
-      <div class="thread-person"><span class="thread-avatar" id="threadAvatar"></span><h1 class="thread-name" id="threadName">对话</h1></div>
+      <div class="thread-person"><button class="thread-avatar" id="threadAvatar" type="button" aria-label="打开聊天设置"></button><h1 class="thread-name" id="threadName">对话</h1></div>
     </header>
     <section class="message-area" id="messageArea" aria-label="聊天消息"></section>
     <form class="message-form" id="messageForm">
@@ -410,6 +440,26 @@
       <input class="message-input" id="messageInput" type="text" placeholder="输入消息" autocomplete="off" />
       <button class="message-send" type="submit" aria-label="发送消息"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 14-7-4 14-3.5-5L5 12Z"/></svg></button>
     </form>
+  </main>
+  <main class="thread-settings-page" id="threadSettingsPage" aria-label="聊天设置页面">
+    <header class="thread-settings-heading">
+      <button class="thread-settings-back" id="threadSettingsBack" type="button" aria-label="返回聊天"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+      <h1 class="thread-settings-title">聊天设置</h1>
+      <button class="thread-settings-save" id="threadSettingsSave" type="button">保存</button>
+    </header>
+    <section class="thread-settings-card" aria-label="聊天设置内容">
+      <div class="thread-settings-profile">
+        <span class="thread-settings-avatar" id="threadSettingsAvatar"></span>
+        <h2 class="thread-settings-name" id="threadSettingsName">对话</h2>
+      </div>
+      <div class="thread-settings-group">
+        <label class="thread-settings-row" for="threadRemarkInput">
+          <span class="thread-settings-label">备注名</span>
+          <input class="thread-settings-input" id="threadRemarkInput" type="text" maxlength="30" placeholder="填写备注名" autocomplete="off" />
+        </label>
+      </div>
+      <p class="thread-settings-hint">修改后的备注名会显示在 Notes 和聊天顶栏中。</p>
+    </section>
   </main>
   <main class="home-shell" aria-label="Mono Desk 个人主页">
     <section class="profile-wrap" aria-label="个人资料">
@@ -601,6 +651,42 @@
       threadPage.classList.remove('active');
     };
     document.getElementById('threadBack').addEventListener('click', closeThread);
+    const threadSettingsPage = document.getElementById('threadSettingsPage');
+    const threadSettingsName = document.getElementById('threadSettingsName');
+    const threadSettingsAvatar = document.getElementById('threadSettingsAvatar');
+    const threadRemarkInput = document.getElementById('threadRemarkInput');
+    const openThreadSettings = () => {
+      const conversation = state.conversations.find(item => item.id === state.currentConversationId);
+      if (!conversation) return;
+      threadSettingsName.textContent = conversation.name;
+      threadSettingsAvatar.innerHTML = defaultAvatar;
+      threadRemarkInput.value = conversation.name;
+      document.body.classList.add('show-thread-settings');
+      threadSettingsPage.classList.add('active');
+    };
+    const closeThreadSettings = () => {
+      document.body.classList.remove('show-thread-settings');
+      threadSettingsPage.classList.remove('active');
+    };
+    threadAvatar.addEventListener('click', openThreadSettings);
+    document.getElementById('threadSettingsBack').addEventListener('click', closeThreadSettings);
+    document.getElementById('threadSettingsSave').addEventListener('click', () => {
+      const conversation = state.conversations.find(item => item.id === state.currentConversationId);
+      const name = threadRemarkInput.value.trim();
+      if (!conversation || !name) return;
+      conversation.name = name;
+      threadName.textContent = name;
+      threadSettingsName.textContent = name;
+      renderConversations();
+      saveState();
+      closeThreadSettings();
+    });
+    threadRemarkInput.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        document.getElementById('threadSettingsSave').click();
+      }
+    });
     document.getElementById('messageForm').addEventListener('submit', event => {
       event.preventDefault();
       const text = messageInput.value.trim();
