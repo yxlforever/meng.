@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#f7f7f5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Mono Desk" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="Mono Desk" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>Mono Desk</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #161616;
+      --muted: #8b8b86;
+      --line: #e2e2dd;
+      --paper: #f7f7f5;
+      --white: #fff;
+      --panel: rgba(255, 255, 255, .97);
+      --shadow: 0 18px 48px rgba(21, 21, 19, .15);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100svh;
+      overflow: hidden;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    button, input, textarea { font: inherit; }
+
+    html { background: var(--paper); }
+
+    .home-shell {
+      width: min(100%, 760px);
+      min-height: 100svh;
+      margin: 0 auto;
+      padding: calc(22px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      isolation: isolate;
+      overflow-x: clip;
+    }
+
+    .home-shell::before {
+      content: "";
+      position: absolute;
+      width: min(76vw, 540px);
+      height: min(76vw, 540px);
+      right: -40%;
+      top: 15%;
+      border: 1px solid rgba(18,18,18,.05);
+      border-radius: 50%;
+      z-index: -1;
+    }
+
+    .topbar {
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .topbar-brand { color: var(--ink); letter-spacing: .08em; }
+    .topbar-action {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--ink);
+      background: transparent;
+    }
+
+    .profile-wrap { width: 100%; max-width: 480px; margin: clamp(14px, 3.5vh, 32px) auto 0; }
+    .profile-heading { margin: 0 0 20px; color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+
+    .profile-card {
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      padding: 26px 28px 18px;
+      border: 1px solid #e8e8e4;
+      border-radius: 28px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 16px 38px rgba(31,31,29,.07);
+    }
+
+    .profile-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .4;
+      background-image: radial-gradient(circle at 14% 18%, #d8d8d4 0 1px, transparent 1.8px), radial-gradient(circle at 73% 27%, #e3e3df 0 1.2px, transparent 2px), radial-gradient(circle at 90% 74%, #d8d8d4 0 1px, transparent 1.8px), radial-gradient(circle at 28% 88%, #e5e5e1 0 1.4px, transparent 2.2px);
+      background-size: 41px 37px, 53px 49px, 47px 43px, 61px 57px;
+    }
+
+    .profile-main { position: relative; z-index: 1; display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 18px; align-items: center; }
+    .avatar-button {
+      position: relative;
+      width: 84px;
+      height: 84px;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid #d6d6d1;
+      border-radius: 50%;
+      background: #ededeb;
+      color: #676762;
+      cursor: pointer;
+    }
+
+    .avatar-button:hover .avatar-overlay,
+    .avatar-button:focus-visible .avatar-overlay { opacity: 1; }
+    .avatar-button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+    .avatar-fallback { display: grid; place-items: center; width: 100%; height: 100%; font-size: 23px; font-weight: 300; letter-spacing: -.05em; }
+    .avatar-image { display: none; width: 100%; height: 100%; object-fit: cover; }
+    .avatar-image.has-image { display: block; }
+    .avatar-image.has-image + .avatar-fallback { display: none; }
+    .avatar-overlay { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; background: rgba(0,0,0,.44); color: var(--white); transition: opacity .2s ease; }
+    .avatar-overlay svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    .profile-meta { min-width: 0; overflow: hidden; }
+    .profile-handle { display: inline-block; min-width: 80px; max-width: 100%; margin: 8px 0 0; overflow-wrap: anywhere; color: var(--muted); font-size: 12px; cursor: text; }
+    .profile-handle:focus { outline: 1px solid #bdbdb8; outline-offset: 4px; border-radius: 4px; }
+
+    .name-line { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+    .profile-name { display: inline-block; min-width: 42px; max-width: 100%; margin: 0; overflow-wrap: anywhere; font-size: 23px; font-weight: 650; letter-spacing: -.04em; cursor: text; }
+    .profile-name:focus { outline: 1px solid #bdbdb8; outline-offset: 4px; border-radius: 4px; }
+    .profile-decor { color: #a1a19d; font-size: 16px; letter-spacing: .1em; white-space: nowrap; }
+    .profile-stats { display: none; }
+    .bio-block { position: relative; z-index: 1; margin-top: 22px; padding-top: 0; border-top: 0; }
+    .bio { display: inline-block; min-width: 80px; margin: 0; color: #62625d; font-size: 14px; line-height: 1.45; cursor: text; }
+    .bio:focus { outline: 1px solid #bdbdb8; outline-offset: 4px; border-radius: 4px; }
+    .week-strip { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 27px; padding: 5px; border: 1px solid #d8d8d4; border-radius: 999px; background: rgba(255,255,255,.72); }
+    .day { min-width: 0; min-height: 37px; padding: 0 3px; border: 0; border-radius: 999px; background: transparent; color: #777772; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .day:hover { color: var(--ink); }
+    .day.active { background: #e7e7e4; color: #5a5a56; box-shadow: 0 2px 7px rgba(20,20,20,.08); }
+    .day:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+    .quick-apps { width: 100%; display: flex; justify-content: center; gap: 18px; margin-top: 22px; }
+    .bottom { margin-top: auto; display: flex; align-items: end; justify-content: center; }
+    .apps { display: flex; align-items: end; gap: 18px; }
+    .app { width: 61px; padding: 0; border: 0; background: transparent; color: var(--ink); text-align: center; cursor: pointer; transition: transform .2s ease; }
+    .app:hover { transform: translateY(-3px); }
+    .app:active { transform: translateY(0); }
+    .app:focus-visible { outline: 2px solid var(--ink); outline-offset: 5px; border-radius: 18px; }
+    .app-icon { width: 56px; height: 56px; display: grid; place-items: center; border: 1px solid #d8d8d3; border-radius: 16px; background: var(--white); box-shadow: 0 6px 15px rgba(15,15,14,.08); }
+    .app:nth-child(2) .app-icon { background: #ededeb; }
+    .app-icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.55; stroke-linecap: round; stroke-linejoin: round; }
+    .app-name { display: block; margin-top: 8px; font-size: 11px; font-weight: 600; }
+
+    .panel {
+      position: fixed;
+      left: 50%;
+      bottom: calc(16px + env(safe-area-inset-bottom));
+      width: min(calc(100% - 32px), 560px);
+      padding: 22px;
+      border: 1px solid rgba(20,20,20,.08);
+      border-radius: 24px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      transform: translate(-50%, calc(100% + 28px));
+      transition: transform .32s cubic-bezier(.2,.8,.2,1);
+      z-index: 5;
+      backdrop-filter: blur(20px);
+    }
+
+    .panel.open { transform: translate(-50%, 0); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; }
+    .panel-title { margin: 0; font-size: 17px; font-weight: 650; }
+    .close { padding: 0; border: 0; background: transparent; color: var(--muted); font-size: 22px; line-height: 1; cursor: pointer; }
+    .close:hover { color: var(--ink); }
+    .panel-copy { margin: 13px 0 0; color: #6e6e69; font-size: 12px; line-height: 1.7; }
+    .panel-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 19px; padding-top: 15px; border-top: 1px solid var(--line); font-size: 12px; }
+    .toggle { width: 39px; height: 23px; padding: 3px; border: 0; border-radius: 14px; background: #d3d3ce; cursor: pointer; transition: background .2s ease; }
+    .toggle span { display: block; width: 17px; height: 17px; border-radius: 50%; background: var(--white); box-shadow: 0 1px 3px rgba(0,0,0,.12); transition: transform .2s ease; }
+    .toggle.on { background: var(--ink); }
+    .toggle.on span { transform: translateX(16px); }
+
+    @media (min-width: 600px) {
+      .home-shell { padding-left: 42px; padding-right: 42px; }
+      .profile-wrap { margin-top: 32px; }
+      .profile-card { padding: 26px 28px 18px; }
+      .apps { gap: 22px; }
+      .app { width: 66px; }
+      .app-icon { width: 60px; height: 60px; }
+    }
+
+    @media (max-height: 660px) {
+      .profile-wrap { margin-top: 14px; }
+      .profile-card { padding: 16px 16px 12px; }
+      .profile-main { grid-template-columns: 70px 1fr; gap: 15px; }
+      .avatar-button { width: 70px; height: 70px; }
+      .profile-name { font-size: 20px; }
+      .week-strip { margin-top: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="home-shell" aria-label="Mono Desk 个人主页">
+    <section class="profile-wrap" aria-label="个人资料">
+      <article class="profile-card">
+        <div class="profile-main">
+          <button class="avatar-button" id="avatarButton" type="button" aria-label="上传头像">
+            <img class="avatar-image" id="avatarImage" alt="头像预览" />
+            <span class="avatar-fallback" id="avatarFallback">M</span>
+            <span class="avatar-overlay" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 7.5h3l1.4-2h7.2l1.4 2h3v11H4v-11Z"/><circle cx="12" cy="13" r="3.2"/></svg>
+            </span>
+          </button>
+          <div class="profile-meta">
+            <div class="name-line">
+              <h1 class="profile-name" id="profileName" contenteditable="true" spellcheck="false" aria-label="点击编辑昵称">사랑해요</h1>
+              <span class="profile-decor" aria-hidden="true">〃 · × · ✿</span>
+            </div>
+            <p class="profile-handle" id="profileHandle" contenteditable="true" spellcheck="false" aria-label="点击编辑账号">@mono.space</p>
+            <div class="profile-stats" aria-label="个人数据">
+              <span class="stat"><strong class="stat-number">0</strong><span class="stat-label">帖子</span></span>
+              <span class="stat"><strong class="stat-number">0</strong><span class="stat-label">关注</span></span>
+              <span class="stat"><strong class="stat-number">0</strong><span class="stat-label">粉丝</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="bio-block">
+          <p class="bio" id="profileBio" contenteditable="true" spellcheck="false" aria-label="点击编辑个性签名">好好生活，慢慢相遇。</p>
+        </div>
+        <div class="week-strip" aria-label="星期选择">
+          <button class="day" data-day="0" type="button">SUN</button>
+          <button class="day active" data-day="1" type="button">MON</button>
+          <button class="day" data-day="2" type="button">TUE</button>
+          <button class="day" data-day="3" type="button">WED</button>
+          <button class="day" data-day="4" type="button">THU</button>
+          <button class="day" data-day="5" type="button">FRI</button>
+          <button class="day" data-day="6" type="button">SAT</button>
+        </div>
+      </article>
+    </section>
+
+    <nav class="quick-apps" aria-label="常用应用">
+      <button class="app" type="button" aria-label="聊天">
+        <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 5.5h14v10H9.5L6 18v-2.5H5v-10Z"/><path d="M8.5 10h7M8.5 13h4"/></svg></span>
+        <span class="app-name">聊天</span>
+      </button>
+      <button class="app" type="button" aria-label="传讯">
+        <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 5 16 7-16 7 3.2-6.1L14 12 7.2 11 4 5Z"/><path d="M7.2 11 4 5"/></svg></span>
+        <span class="app-name">传讯</span>
+      </button>
+    </nav>
+
+    <footer class="bottom">
+      <nav class="apps" aria-label="应用入口">
+        <button class="app" id="settingsApp" type="button" aria-label="设置">
+          <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="m19.2 13.4 1.1.9-1.7 3-1.4-.5a7.7 7.7 0 0 1-1.8 1l-.2 1.5h-3.4l-.2-1.5a7.7 7.7 0 0 1-1.8-1l-1.4.5-1.7-3 1.1-.9a7.5 7.5 0 0 1 0-2.8l-1.1-.9 1.7-3 1.4.5a7.7 7.7 0 0 1 1.8-1l.2-1.5h3.4l.2 1.5a7.7 7.7 0 0 1 1.8 1l1.4-.5 1.7 3-1.1.9a7.5 7.5 0 0 1 0 2.8Z"/></svg></span>
+          <span class="app-name">设置</span>
+        </button>
+        <button class="app" data-panel="beautifyPanel" type="button">
+          <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m13.4 3.8.9 4.1 3.9.9-3.9.9-.9 4.1-.9-4.1-3.9-.9 3.9-.9.9-4.1Z"/><path d="m18.4 14.6.5 2.4 2.3.5-2.3.6-.5 2.3-.6-2.3-2.3-.6 2.3-.5.6-2.4Z"/><path d="M5.3 12.7 6 15.5l2.7.7-2.7.7-.7 2.8-.7-2.8-2.7-.7 2.7-.7.7-2.8Z"/></svg></span>
+          <span class="app-name">美化</span>
+        </button>
+      </nav>
+    </footer>
+    <input id="avatarInput" type="file" accept="image/*" hidden />
+
+    <aside class="panel" id="settingsPanel" aria-hidden="true">
+      <div class="panel-head"><h2 class="panel-title">设置</h2><button class="close" type="button" aria-label="关闭">&times;</button></div>
+      <p class="panel-copy">系统级偏好会在后续版本集中放在这里，保持主页安静、清晰。</p>
+      <div class="panel-row"><span>专注模式</span><button class="toggle on" type="button" aria-label="切换专注模式"><span></span></button></div>
+    </aside>
+
+    <aside class="panel" id="beautifyPanel" aria-hidden="true">
+      <div class="panel-head"><h2 class="panel-title">美化</h2><button class="close" type="button" aria-label="关闭">&times;</button></div>
+      <p class="panel-copy">在这里切换头像样式、字体和主页密度。当前使用白色主题。</p>
+      <div class="panel-row"><span>低对比度界面</span><button class="toggle" type="button" aria-label="切换低对比度界面"><span></span></button></div>
+    </aside>
+  </main>
+
+  <script>
+    const panels = [...document.querySelectorAll('.panel')];
+    const closePanels = () => panels.forEach(panel => {
+      panel.classList.remove('open');
+      panel.setAttribute('aria-hidden', 'true');
+    });
+    const openPanel = panelId => {
+      closePanels();
+      const panel = document.getElementById(panelId);
+      panel.classList.add('open');
+      panel.setAttribute('aria-hidden', 'false');
+    };
+
+    document.querySelectorAll('[data-panel]').forEach(button => button.addEventListener('click', () => openPanel(button.dataset.panel)));
+    document.querySelectorAll('.close').forEach(button => button.addEventListener('click', closePanels));
+    document.querySelectorAll('.toggle').forEach(toggle => toggle.addEventListener('click', () => toggle.classList.toggle('on')));
+
+    document.querySelectorAll('[contenteditable="true"]').forEach(field => {
+      field.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          field.blur();
+        }
+      });
+      field.addEventListener('blur', () => {
+        const fallback = field.id === 'profileName'
+          ? '사랑해요'
+          : field.id === 'profileHandle'
+            ? '@mono.space'
+            : '好好生活，慢慢相遇。';
+        field.textContent = field.textContent.trim() || fallback;
+      });
+    });
+
+    document.querySelectorAll('.day').forEach(day => day.addEventListener('click', () => {
+      document.querySelectorAll('.day').forEach(item => item.classList.remove('active'));
+      day.classList.add('active');
+    }));
+
+    const avatarInput = document.getElementById('avatarInput');
+    const avatarButton = document.getElementById('avatarButton');
+    const avatarImage = document.getElementById('avatarImage');
+    avatarButton.addEventListener('click', () => avatarInput.click());
+    avatarInput.addEventListener('change', event => {
+      const [file] = event.target.files;
+      if (!file) return;
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        avatarImage.src = reader.result;
+        avatarImage.classList.add('has-image');
+      });
+      reader.readAsDataURL(file);
+    });
+
+  </script>
+</body>
+</html>
