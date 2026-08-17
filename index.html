@@ -490,10 +490,11 @@
       <div class="thread-settings-group">
         <div class="thread-settings-row">
           <span class="thread-settings-label">回复条数</span>
-          <div class="thread-settings-stepper">
-            <button id="replyCountDown" type="button" aria-label="减少">−</button>
-            <span id="replyCountValue">1</span>
-            <button id="replyCountUp" type="button" aria-label="增加">+</button>
+          <div class="thread-settings-range">
+            <input id="replyCountMinInput" type="number" min="1" max="99" value="1" aria-label="最少回复条数" />
+            <span>～</span>
+            <input id="replyCountMaxInput" type="number" min="1" max="99" value="3" aria-label="最多回复条数" />
+            <span>条</span>
           </div>
         </div>
         <div class="thread-settings-row">
@@ -712,7 +713,9 @@
     const scheduleAutoReplies = conversation => {
       const cards = (conversation.replyCards || []).filter(Boolean);
       if (!cards.length) return;
-      const count = Math.min(99, Math.max(1, Number(conversation.replyCount) || 1));
+      const minCount = Math.min(99, Math.max(1, Number(conversation.replyCountMin) || Number(conversation.replyCount) || 1));
+      const maxCount = Math.min(99, Math.max(minCount, Number(conversation.replyCountMax) || Number(conversation.replyCount) || 3));
+      const count = randomBetween(minCount, maxCount);
       const minDelay = Math.max(1, Number(conversation.replyMin) || 3);
       const maxDelay = Math.max(minDelay, Number(conversation.replyMax) || 10);
       const emojiProbability = Math.min(100, Math.max(0, Number(conversation.emojiProbability) || 0));
@@ -757,7 +760,8 @@
     const threadChatAvatar = document.getElementById('threadChatAvatar');
     const threadUserAvatar = document.getElementById('threadUserAvatar');
     const threadAvatarInput = document.getElementById('threadAvatarInput');
-    const replyCountValue = document.getElementById('replyCountValue');
+    const replyCountMinInput = document.getElementById('replyCountMinInput');
+    const replyCountMaxInput = document.getElementById('replyCountMaxInput');
     const replyMinInput = document.getElementById('replyMinInput');
     const replyMaxInput = document.getElementById('replyMaxInput');
     const emojiProbabilityInput = document.getElementById('emojiProbabilityInput');
@@ -797,7 +801,8 @@
       threadSettingsNameInput.value = conversation.name;
       threadChatAvatar.innerHTML = avatarMarkup(conversation.chatAvatar);
       threadUserAvatar.innerHTML = avatarMarkup(conversation.userAvatar);
-      replyCountValue.textContent = conversation.replyCount || 1;
+      replyCountMinInput.value = conversation.replyCountMin || conversation.replyCount || 1;
+      replyCountMaxInput.value = conversation.replyCountMax || conversation.replyCount || 3;
       replyMinInput.value = conversation.replyMin || 3;
       replyMaxInput.value = conversation.replyMax || 10;
       emojiProbabilityInput.value = conversation.emojiProbability ?? 20;
@@ -815,7 +820,9 @@
       const name = threadSettingsNameInput.value.trim();
       if (!conversation || !name) return;
       conversation.name = name;
-      conversation.replyCount = Math.max(1, Number(replyCountValue.textContent) || 1);
+      conversation.replyCountMin = Math.min(99, Math.max(1, Number(replyCountMinInput.value) || 1));
+      conversation.replyCountMax = Math.min(99, Math.max(conversation.replyCountMin, Number(replyCountMaxInput.value) || 3));
+      delete conversation.replyCount;
       conversation.replyMin = Math.max(1, Number(replyMinInput.value) || 3);
       conversation.replyMax = Math.max(conversation.replyMin, Number(replyMaxInput.value) || 10);
       conversation.emojiProbability = Math.min(100, Math.max(0, Number(emojiProbabilityInput.value) || 0));
@@ -867,12 +874,6 @@
       link.download = '字卡库.txt';
       link.click();
       URL.revokeObjectURL(url);
-    });
-    document.getElementById('replyCountDown').addEventListener('click', () => {
-      replyCountValue.textContent = Math.max(1, Number(replyCountValue.textContent) - 1);
-    });
-    document.getElementById('replyCountUp').addEventListener('click', () => {
-      replyCountValue.textContent = Math.min(99, Number(replyCountValue.textContent) + 1);
     });
     threadSettingsNameInput.addEventListener('keydown', event => {
       if (event.key === 'Enter') {
