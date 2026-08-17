@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
@@ -224,7 +224,9 @@
     .conversation-item { display: flex; align-items: center; gap: 13px; width: 100%; padding: 10px 4px; border: 0; border-radius: 14px; background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
     .conversation-item:hover { background: #f4f4f2; }
     .conversation-avatar { display: grid; width: 48px; height: 48px; flex: 0 0 48px; place-items: center; border-radius: 50%; background: #d3d3d0; color: #8c8c88; }
+    .conversation-avatar { overflow: hidden; }
     .conversation-avatar svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .conversation-avatar img, .thread-avatar img, .message-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .conversation-name { min-width: 0; overflow: hidden; font-size: 15px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
     .note-modal { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 24px; background: rgba(28,28,27,.32); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity .22s ease; }
     .note-modal.open { opacity: 1; pointer-events: auto; }
@@ -250,7 +252,7 @@
     .thread-back svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .thread-person { display: flex; align-items: center; justify-content: center; gap: 0; width: 100%; }
     .thread-avatar { position: absolute; right: 6px; bottom: 7px; display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #d1d1ce; color: #8c8c88; }
-    .thread-avatar { padding: 0; border: 0; cursor: pointer; transition: transform .18s ease, background .18s ease; }
+    .thread-avatar { padding: 0; overflow: hidden; border: 0; cursor: pointer; transition: transform .18s ease, background .18s ease; }
     .thread-avatar:hover { background: #c5c5c1; transform: scale(1.04); }
     .thread-avatar:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
     .thread-avatar svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
@@ -266,21 +268,42 @@
     .thread-settings-save { right: -8px; padding: 0 8px; border-radius: 9px; font-size: 14px; font-weight: 700; }
     .thread-settings-save:hover { background: #e8e8e5; }
     .thread-settings-card { width: calc(100% + 40px); min-height: calc(100dvh - 58px - env(safe-area-inset-top)); margin: 0 -20px; padding: 30px 22px calc(30px + env(safe-area-inset-bottom)); border-radius: 25px 25px 0 0; background: var(--white); box-shadow: 0 -1px 0 rgba(20,20,20,.05), 0 -16px 34px rgba(31,31,29,.05); }
-    .thread-settings-profile { display: grid; justify-items: center; gap: 11px; padding: 5px 0 28px; }
-    .thread-settings-avatar { display: grid; width: 74px; height: 74px; place-items: center; border: 0; border-radius: 50%; background: #d1d1ce; color: #858580; }
+    .thread-settings-profile { display: grid; justify-items: center; gap: 14px; padding: 5px 0 28px; }
+    .thread-settings-avatars { display: flex; align-items: flex-start; gap: 24px; }
+    .thread-settings-avatar-item { display: grid; justify-items: center; gap: 7px; color: #8c8c87; font-size: 11px; font-weight: 650; letter-spacing: .02em; }
+    .thread-settings-avatar { display: grid; width: 74px; height: 74px; place-items: center; padding: 0; overflow: hidden; border: 0; border-radius: 50%; background: #d1d1ce; color: #858580; cursor: pointer; }
+    .thread-settings-avatar:hover { background: #c5c5c1; transform: scale(1.04); }
+    .thread-settings-avatar:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
     .thread-settings-avatar svg { width: 43px; height: 43px; fill: none; stroke: currentColor; stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; }
-    .thread-settings-name { margin: 0; color: #292927; font-size: 18px; font-weight: 750; }
-    .thread-settings-group { overflow: hidden; border: 1px solid #e8e8e4; border-radius: 17px; background: #fafaf8; }
-    .thread-settings-row { display: grid; grid-template-columns: 82px 1fr; align-items: center; min-height: 55px; padding: 0 16px; }
-    .thread-settings-label { color: #4e4e4a; font-size: 14px; font-weight: 650; }
-    .thread-settings-input { min-width: 0; width: 100%; padding: 10px 0; border: 0; outline: 0; background: transparent; color: #292927; font-size: 14px; text-align: right; }
-    .thread-settings-input::placeholder { color: #aaa9a4; }
-    .thread-settings-hint { margin: 11px 5px 0; color: #999994; font-size: 12px; line-height: 1.55; }
+    .thread-settings-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .thread-settings-name-input { width: min(100%, 240px); padding: 8px 4px; border: 0; border-bottom: 1px solid #d2d2cd; outline: 0; background: transparent; color: #292927; font-size: 18px; font-weight: 750; text-align: center; }
+    .thread-settings-name-input:focus { border-color: #686863; }
+    .thread-settings-name-input::placeholder { color: #aaa9a4; }
+    .thread-settings-divider { display: flex; align-items: center; gap: 12px; margin: 0 0 22px; }
+    .thread-settings-divider::before, .thread-settings-divider::after { content: ""; height: 1px; flex: 1; background: #deded9; }
+    .thread-settings-divider span { width: 5px; height: 5px; flex: 0 0 5px; border-radius: 50%; background: #bdbdb8; }
+    .thread-settings-library { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 58px; padding: 0 2px; border: 0; border-bottom: 1px solid #e2e2de; background: transparent; color: #4e4e4a; font-size: 14px; font-weight: 650; text-align: left; cursor: pointer; }
+    .thread-settings-library::after { content: '›'; color: #aaa9a4; font-size: 22px; font-weight: 400; }
+    .card-library-modal { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 24px; background: rgba(28,28,27,.32); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+    .card-library-modal.open { opacity: 1; pointer-events: auto; }
+    .card-library-dialog { width: min(100%, 520px); max-height: min(78dvh, 620px); padding: 24px 22px 18px; overflow: hidden; border: 1px solid #e4e4df; border-radius: 20px; background: #fff; box-shadow: 0 20px 52px rgba(21,21,19,.18); }
+    .card-library-title { margin: 0 0 18px; color: #252523; font-size: 18px; font-weight: 700; text-align: center; }
+    .card-library-list { display: grid; max-height: 45dvh; overflow-y: auto; border-top: 1px solid #e2e2de; border-bottom: 1px solid #e2e2de; }
+    .card-library-item { min-height: 46px; padding: 13px 4px; border: 0; border-bottom: 1px solid #efefeb; background: transparent; color: #4e4e4a; font-size: 14px; line-height: 1.45; text-align: left; white-space: pre-wrap; }
+    .card-library-item:last-child { border-bottom: 0; }
+    .card-library-editor { display: none; width: 100%; height: 45dvh; padding: 13px; border: 1px solid #e2e2de; outline: 0; resize: vertical; color: #4e4e4a; font: inherit; line-height: 1.7; }
+    .card-library-dialog.editing .card-library-list { display: none; }
+    .card-library-dialog.editing .card-library-editor { display: block; }
+    .card-library-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 18px; }
+    .card-library-action { min-width: 0; padding: 9px 4px; border: 1px solid #d5d5d0; border-radius: 9px; background: #f5f5f3; color: #666661; font-size: 12px; cursor: pointer; }
+    .card-library-action:hover { background: #e9e9e6; }
+    .thread-settings-group { border-top: 1px solid #e2e2de; }
+    .thread-settings-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 58px; padding: 0 2px; border-bottom: 1px solid #e2e2de; }
     .message-area { display: flex; flex: 1; flex-direction: column; gap: 12px; padding: 25px 6px 110px; overflow-y: auto; }
     .message { display: flex; max-width: 82%; align-items: flex-end; gap: 8px; }
     .message.incoming { align-self: flex-start; }
     .message.outgoing { align-self: flex-end; flex-direction: row-reverse; }
-    .message-avatar { display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; border-radius: 50%; background: #d1d1ce; color: #8c8c88; }
+    .message-avatar { display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; overflow: hidden; border-radius: 50%; background: #d1d1ce; color: #8c8c88; }
     .message-avatar svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
     .message-bubble { padding: 10px 13px; border-radius: 6px 15px 15px 15px; background: #fff; color: #333331; font-size: 14px; line-height: 1.5; box-shadow: 0 2px 8px rgba(30,30,28,.05); }
     .message.outgoing .message-bubble { border-radius: 15px 6px 15px 15px; background: #d8d8d5; }
@@ -449,18 +472,64 @@
     </header>
     <section class="thread-settings-card" aria-label="聊天设置内容">
       <div class="thread-settings-profile">
-        <span class="thread-settings-avatar" id="threadSettingsAvatar"></span>
-        <h2 class="thread-settings-name" id="threadSettingsName">对话</h2>
+        <div class="thread-settings-avatars" aria-label="更换头像">
+          <div class="thread-settings-avatar-item">
+            <button class="thread-settings-avatar" id="threadChatAvatar" type="button" aria-label="更换 Chat 头像"></button>
+            <span>Chat</span>
+          </div>
+          <div class="thread-settings-avatar-item">
+            <button class="thread-settings-avatar" id="threadUserAvatar" type="button" aria-label="更换 User 头像"></button>
+            <span>User</span>
+          </div>
+        </div>
+        <input class="thread-settings-name-input" id="threadSettingsNameInput" type="text" maxlength="30" placeholder="填写备注名" autocomplete="off" aria-label="备注名" />
       </div>
+      <div class="thread-settings-divider" aria-hidden="true"><span></span></div>
+      <input id="threadAvatarInput" type="file" accept="image/*" hidden />
+      <h3 class="thread-settings-section-title">字卡回复</h3>
       <div class="thread-settings-group">
-        <label class="thread-settings-row" for="threadRemarkInput">
-          <span class="thread-settings-label">备注名</span>
-          <input class="thread-settings-input" id="threadRemarkInput" type="text" maxlength="30" placeholder="填写备注名" autocomplete="off" />
-        </label>
+        <div class="thread-settings-row">
+          <span class="thread-settings-label">回复条数</span>
+          <div class="thread-settings-stepper">
+            <button id="replyCountDown" type="button" aria-label="减少">−</button>
+            <span id="replyCountValue">1</span>
+            <button id="replyCountUp" type="button" aria-label="增加">+</button>
+          </div>
+        </div>
+        <div class="thread-settings-row">
+          <span class="thread-settings-label">回复区间(秒)</span>
+          <div class="thread-settings-range">
+            <input id="replyMinInput" type="number" min="1" max="999" value="3" aria-label="最短秒数" />
+            <span>～</span>
+            <input id="replyMaxInput" type="number" min="1" max="999" value="10" aria-label="最长秒数" />
+          </div>
+        </div>
+        <div class="thread-settings-row">
+          <span class="thread-settings-label">表情包概率</span>
+          <div class="thread-settings-range">
+            <input id="emojiProbabilityInput" type="number" min="0" max="100" value="20" aria-label="表情包概率" />
+            <span>%</span>
+          </div>
+        </div>
       </div>
-      <p class="thread-settings-hint">修改后的备注名会显示在 Notes 和聊天顶栏中。</p>
+      <div class="thread-settings-divider" aria-hidden="true" style="margin-top: 24px;"><span></span></div>
+      <button class="thread-settings-library" id="openCardLibrary" type="button">字卡库</button>
     </section>
   </main>
+  <div class="card-library-modal" id="cardLibraryModal" aria-hidden="true">
+    <section class="card-library-dialog" id="cardLibraryDialog" role="dialog" aria-modal="true" aria-labelledby="cardLibraryTitle">
+      <h2 class="card-library-title" id="cardLibraryTitle">字卡库</h2>
+      <div class="card-library-list" id="cardLibraryList"></div>
+      <textarea class="card-library-editor" id="cardLibraryEditor" aria-label="编辑字卡，每行一条" placeholder="每行输入一条字卡"></textarea>
+      <div class="card-library-actions">
+        <button class="card-library-action" id="cardLibraryImport" type="button">导入</button>
+        <button class="card-library-action" id="cardLibraryExport" type="button">导出</button>
+        <button class="card-library-action" id="cardLibraryEdit" type="button">编辑</button>
+        <button class="card-library-action" id="cardLibrarySave" type="button">保存</button>
+      </div>
+      <input id="cardLibraryFile" type="file" accept="text/plain,.txt" hidden />
+    </section>
+  </div>
   <main class="home-shell" aria-label="Mono Desk 个人主页">
     <section class="profile-wrap" aria-label="个人资料">
       <article class="profile-card">
@@ -615,7 +684,7 @@
         item.type = 'button';
         item.className = 'conversation-item';
         item.setAttribute('aria-label', `打开与${conversation.name}的对话`);
-        item.innerHTML = `<span class="conversation-avatar">${defaultAvatar}</span><span class="conversation-name"></span>`;
+        item.innerHTML = `<span class="conversation-avatar">${avatarMarkup(conversation.chatAvatar)}</span><span class="conversation-name"></span>`;
         item.querySelector('.conversation-name').textContent = conversation.name;
         item.addEventListener('click', () => openThread(conversation));
         conversationList.append(item);
@@ -631,16 +700,48 @@
       (conversation.messages || []).forEach(message => {
         const item = document.createElement('div');
         item.className = `message ${message.mine ? 'outgoing' : 'incoming'}`;
-        item.innerHTML = `<span class="message-avatar">${defaultAvatar}</span><span class="message-bubble"></span>`;
+        const messageAvatar = message.mine ? conversation.userAvatar : conversation.chatAvatar;
+        item.innerHTML = `<span class="message-avatar">${avatarMarkup(messageAvatar)}</span><span class="message-bubble"></span>`;
         item.querySelector('.message-bubble').textContent = message.text;
         messageArea.append(item);
       });
       messageArea.scrollTop = messageArea.scrollHeight;
     };
+    const replyEmojis = ['🙂', '😊', '🥰', '😌', '✨', '🌙', '💭', '🤍'];
+    const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const scheduleAutoReplies = conversation => {
+      const cards = (conversation.replyCards || []).filter(Boolean);
+      if (!cards.length) return;
+      const count = Math.min(99, Math.max(1, Number(conversation.replyCount) || 1));
+      const minDelay = Math.max(1, Number(conversation.replyMin) || 3);
+      const maxDelay = Math.max(minDelay, Number(conversation.replyMax) || 10);
+      const emojiProbability = Math.min(100, Math.max(0, Number(conversation.emojiProbability) || 0));
+      conversation.pendingReplies = (conversation.pendingReplies || 0) + count;
+      const sendReply = index => {
+        if (index >= count) {
+          conversation.pendingReplies = Math.max(0, (conversation.pendingReplies || 0) - count);
+          saveState();
+          return;
+        }
+        const delay = randomBetween(minDelay, maxDelay) * 1000;
+        window.setTimeout(() => {
+          const card = cards[randomBetween(0, cards.length - 1)];
+          const text = Math.random() * 100 < emojiProbability
+            ? `${card} ${replyEmojis[randomBetween(0, replyEmojis.length - 1)]}`
+            : card;
+          conversation.messages = conversation.messages || [];
+          conversation.messages.push({ text, mine: false });
+          if (state.currentConversationId === conversation.id) renderMessages(conversation);
+          saveState();
+          sendReply(index + 1);
+        }, delay);
+      };
+      sendReply(0);
+    };
     const openThread = conversation => {
       state.currentConversationId = conversation.id;
       threadName.textContent = conversation.name;
-      threadAvatar.innerHTML = defaultAvatar;
+      threadAvatar.innerHTML = avatarMarkup(conversation.chatAvatar);
       renderMessages(conversation);
       document.body.classList.add('show-thread');
       threadPage.classList.add('active');
@@ -652,15 +753,54 @@
     };
     document.getElementById('threadBack').addEventListener('click', closeThread);
     const threadSettingsPage = document.getElementById('threadSettingsPage');
-    const threadSettingsName = document.getElementById('threadSettingsName');
-    const threadSettingsAvatar = document.getElementById('threadSettingsAvatar');
-    const threadRemarkInput = document.getElementById('threadRemarkInput');
+    const threadSettingsNameInput = document.getElementById('threadSettingsNameInput');
+    const threadChatAvatar = document.getElementById('threadChatAvatar');
+    const threadUserAvatar = document.getElementById('threadUserAvatar');
+    const threadAvatarInput = document.getElementById('threadAvatarInput');
+    const replyCountValue = document.getElementById('replyCountValue');
+    const replyMinInput = document.getElementById('replyMinInput');
+    const replyMaxInput = document.getElementById('replyMaxInput');
+    const emojiProbabilityInput = document.getElementById('emojiProbabilityInput');
+    const cardLibraryModal = document.getElementById('cardLibraryModal');
+    const cardLibraryDialog = document.getElementById('cardLibraryDialog');
+    const cardLibraryList = document.getElementById('cardLibraryList');
+    const cardLibraryEditor = document.getElementById('cardLibraryEditor');
+    const cardLibraryFile = document.getElementById('cardLibraryFile');
+    let selectedAvatarTarget = null;
+    let cardLibraryDraft = [];
+    const renderCardLibrary = cards => {
+      cardLibraryList.replaceChildren();
+      (cards.length ? cards : ['暂无字卡']).forEach(text => {
+        const item = document.createElement('div');
+        item.className = 'card-library-item';
+        item.textContent = text;
+        cardLibraryList.append(item);
+      });
+    };
+    const openCardLibrary = () => {
+      const conversation = state.conversations.find(item => item.id === state.currentConversationId);
+      if (!conversation) return;
+      cardLibraryDraft = [...(conversation.replyCards || [])];
+      renderCardLibrary(cardLibraryDraft);
+      cardLibraryDialog.classList.remove('editing');
+      cardLibraryModal.classList.add('open');
+      cardLibraryModal.setAttribute('aria-hidden', 'false');
+    };
+    const closeCardLibrary = () => {
+      cardLibraryModal.classList.remove('open');
+      cardLibraryModal.setAttribute('aria-hidden', 'true');
+    };
+    const avatarMarkup = source => source ? `<img src="${source}" alt="" />` : defaultAvatar;
     const openThreadSettings = () => {
       const conversation = state.conversations.find(item => item.id === state.currentConversationId);
       if (!conversation) return;
-      threadSettingsName.textContent = conversation.name;
-      threadSettingsAvatar.innerHTML = defaultAvatar;
-      threadRemarkInput.value = conversation.name;
+      threadSettingsNameInput.value = conversation.name;
+      threadChatAvatar.innerHTML = avatarMarkup(conversation.chatAvatar);
+      threadUserAvatar.innerHTML = avatarMarkup(conversation.userAvatar);
+      replyCountValue.textContent = conversation.replyCount || 1;
+      replyMinInput.value = conversation.replyMin || 3;
+      replyMaxInput.value = conversation.replyMax || 10;
+      emojiProbabilityInput.value = conversation.emojiProbability ?? 20;
       document.body.classList.add('show-thread-settings');
       threadSettingsPage.classList.add('active');
     };
@@ -672,20 +812,94 @@
     document.getElementById('threadSettingsBack').addEventListener('click', closeThreadSettings);
     document.getElementById('threadSettingsSave').addEventListener('click', () => {
       const conversation = state.conversations.find(item => item.id === state.currentConversationId);
-      const name = threadRemarkInput.value.trim();
+      const name = threadSettingsNameInput.value.trim();
       if (!conversation || !name) return;
       conversation.name = name;
+      conversation.replyCount = Math.max(1, Number(replyCountValue.textContent) || 1);
+      conversation.replyMin = Math.max(1, Number(replyMinInput.value) || 3);
+      conversation.replyMax = Math.max(conversation.replyMin, Number(replyMaxInput.value) || 10);
+      conversation.emojiProbability = Math.min(100, Math.max(0, Number(emojiProbabilityInput.value) || 0));
       threadName.textContent = name;
-      threadSettingsName.textContent = name;
       renderConversations();
+      renderMessages(conversation);
       saveState();
       closeThreadSettings();
     });
-    threadRemarkInput.addEventListener('keydown', event => {
+    document.getElementById('openCardLibrary').addEventListener('click', openCardLibrary);
+    cardLibraryModal.addEventListener('click', event => {
+      if (event.target === cardLibraryModal) closeCardLibrary();
+    });
+    document.getElementById('cardLibraryEdit').addEventListener('click', () => {
+      cardLibraryEditor.value = cardLibraryDraft.join('\n');
+      cardLibraryDialog.classList.add('editing');
+      cardLibraryEditor.focus();
+    });
+    document.getElementById('cardLibrarySave').addEventListener('click', () => {
+      const conversation = state.conversations.find(item => item.id === state.currentConversationId);
+      if (cardLibraryDialog.classList.contains('editing')) {
+        cardLibraryDraft = cardLibraryEditor.value.split(/\r?\n/).map(item => item.trim()).filter(Boolean);
+        renderCardLibrary(cardLibraryDraft);
+        cardLibraryDialog.classList.remove('editing');
+      }
+      if (conversation) {
+        conversation.replyCards = [...cardLibraryDraft];
+        saveState();
+      }
+      closeCardLibrary();
+    });
+    document.getElementById('cardLibraryImport').addEventListener('click', () => cardLibraryFile.click());
+    cardLibraryFile.addEventListener('change', event => {
+      const [file] = event.target.files;
+      if (!file) return;
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        cardLibraryDraft = String(reader.result || '').split(/\r?\n/).map(item => item.trim()).filter(Boolean);
+        renderCardLibrary(cardLibraryDraft);
+        cardLibraryFile.value = '';
+      });
+      reader.readAsText(file);
+    });
+    document.getElementById('cardLibraryExport').addEventListener('click', () => {
+      const blob = new Blob([cardLibraryDraft.join('\n')], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = '字卡库.txt';
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+    document.getElementById('replyCountDown').addEventListener('click', () => {
+      replyCountValue.textContent = Math.max(1, Number(replyCountValue.textContent) - 1);
+    });
+    document.getElementById('replyCountUp').addEventListener('click', () => {
+      replyCountValue.textContent = Math.min(99, Number(replyCountValue.textContent) + 1);
+    });
+    threadSettingsNameInput.addEventListener('keydown', event => {
       if (event.key === 'Enter') {
         event.preventDefault();
         document.getElementById('threadSettingsSave').click();
       }
+    });
+    [threadChatAvatar, threadUserAvatar].forEach(button => button.addEventListener('click', () => {
+      selectedAvatarTarget = button === threadChatAvatar ? 'chatAvatar' : 'userAvatar';
+      threadAvatarInput.click();
+    }));
+    threadAvatarInput.addEventListener('change', () => {
+      const file = threadAvatarInput.files[0];
+      const conversation = state.conversations.find(item => item.id === state.currentConversationId);
+      if (!file || !conversation || !selectedAvatarTarget) return;
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        conversation[selectedAvatarTarget] = reader.result;
+        threadChatAvatar.innerHTML = avatarMarkup(conversation.chatAvatar);
+        threadUserAvatar.innerHTML = avatarMarkup(conversation.userAvatar);
+        threadAvatar.innerHTML = avatarMarkup(conversation.chatAvatar);
+        renderConversations();
+        renderMessages(conversation);
+        saveState();
+        threadAvatarInput.value = '';
+      });
+      reader.readAsDataURL(file);
     });
     document.getElementById('messageForm').addEventListener('submit', event => {
       event.preventDefault();
@@ -697,6 +911,7 @@
       messageInput.value = '';
       renderMessages(conversation);
       saveState();
+      if (conversation.autoReply !== false) scheduleAutoReplies(conversation);
     });
     const closeNoteModal = () => {
       noteModal.classList.remove('open');
