@@ -49,7 +49,11 @@
       text-rendering: optimizeLegibility;
     }
     button, input, textarea { font: inherit; }
-    body.has-custom-font, body.has-custom-font * { font-family: "UserGlobalFont", ui-sans-serif, system-ui, sans-serif !important; }
+    body.has-custom-font {
+      --user-font-family: "UserGlobalFont", ui-sans-serif, system-ui, sans-serif;
+      font-family: var(--user-font-family);
+    }
+    body.has-custom-font :where(button, input, textarea, select, p, span, strong, label, .profile-name, .profile-handle, .bio, .app-name, .thread-name, .message-bubble, .conversation-name, .thread-settings-label, .thread-wallpaper-title, .thread-wallpaper-status) { font-family: var(--user-font-family) !important; }
 
     .home-shell {
       width: min(100%, 760px);
@@ -274,8 +278,13 @@
     .beautify-file-button { width: 100%; min-height: 42px; padding: 9px 14px; border: 1px dashed #c9c9c4; border-radius: 9px; background: #f5f5f3; color: #696964; font-size: 12px; cursor: pointer; }
     .beautify-file-button:hover { background: #ecece9; }
     .beautify-preview { display: grid; min-height: 88px; margin-top: 18px; padding: 12px; place-items: center; overflow: hidden; border: 1px solid #e3e3de; border-radius: 12px; background: #f7f7f5; color: #8a8a85; font-size: 12px; text-align: center; }
-    .beautify-preview.wallpaper { background-position: center; background-size: cover; }
+    .beautify-preview.wallpaper { background-position: top center; background-size: 100% auto; background-repeat: no-repeat; }
     .beautify-preview.font { color: #30302e; font-size: 21px; line-height: 1.4; }
+    .font-preset-panel { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 7px; margin-top: 12px; }
+    .font-preset-panel[hidden] { display: none; }
+    .font-preset-select { min-width: 0; height: 36px; padding: 0 9px; border: 1px solid #d7d7d2; border-radius: 8px; background: #fff; color: #64645f; font-size: 11px; }
+    .font-preset-button { min-width: 54px; padding: 0 10px; border: 1px solid #d4d4cf; border-radius: 8px; background: #f2f2ef; color: #696964; font-size: 11px; cursor: pointer; }
+    .font-preset-button:hover { background: #e7e7e3; }
     .beautify-dialog-error { min-height: 17px; margin: 8px 0 0; color: #a06464; font-size: 11px; text-align: center; }
     .thread-page { display: none; width: min(100%, 760px); height: 100dvh; min-height: 100dvh; margin: 0 auto; padding: 0; overflow: hidden; background: #f2f2f0; }
     .thread-page.active { position: fixed; inset: 0; display: flex; flex-direction: column; width: min(100%, 760px); height: 100dvh; min-height: 0; overflow: hidden; }
@@ -457,6 +466,50 @@
       stroke-linecap: round;
       stroke-linejoin: round;
     }
+    .emoji-panel {
+      position: absolute;
+      right: max(10px, env(safe-area-inset-right));
+      bottom: calc(52px + env(safe-area-inset-bottom));
+      left: max(10px, env(safe-area-inset-left));
+      z-index: 4;
+      display: flex;
+      max-height: min(340px, 46dvh);
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid #deded9;
+      border-radius: 18px;
+      background: rgba(255,255,255,.98);
+      box-shadow: 0 -12px 34px rgba(25,25,23,.14);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px) scale(.98);
+      transform-origin: bottom right;
+      transition: opacity .18s ease, transform .2s ease;
+      backdrop-filter: blur(18px);
+    }
+    .emoji-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+    .emoji-panel-tabs { display: flex; flex: 0 0 auto; align-items: center; gap: 6px; min-height: 46px; padding: 7px 9px; overflow-x: auto; border-bottom: 1px solid #e7e7e3; scrollbar-width: none; }
+    .emoji-panel-tabs::-webkit-scrollbar { display: none; }
+    .emoji-tab { flex: 0 0 auto; max-width: 120px; padding: 7px 12px; overflow: hidden; border: 0; border-radius: 999px; background: transparent; color: #777772; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+    .emoji-tab.active { background: #e9e9e6; color: #292927; font-weight: 700; }
+    .emoji-import-open { flex: 0 0 auto; min-width: 55px; padding: 7px 12px; border: 1px dashed #c7c7c2; border-radius: 999px; background: #f7f7f5; color: #60605c; font-size: 12px; cursor: pointer; }
+    .emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 7px; min-height: 116px; padding: 12px; overflow-y: auto; }
+    .emoji-item { display: grid; min-width: 0; padding: 6px 4px 5px; place-items: center; border: 0; border-radius: 12px; background: transparent; color: #6b6b66; font-size: 10px; cursor: pointer; }
+    .emoji-item:hover { background: #f0f0ed; }
+    .emoji-item img { width: 50px; height: 50px; object-fit: contain; }
+    .emoji-item span { display: block; width: 100%; margin-top: 4px; overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+    .emoji-empty { grid-column: 1 / -1; align-self: center; margin: 28px 0; color: #9a9a95; font-size: 12px; text-align: center; }
+    .emoji-import-dialog { width: min(100%, 410px); }
+    .emoji-category-input { margin-bottom: 18px; }
+    .emoji-import-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 12px; }
+    .emoji-import-tab { padding: 8px; border: 1px solid #d7d7d2; border-radius: 8px; background: #f4f4f2; color: #777772; font-size: 12px; cursor: pointer; }
+    .emoji-import-tab.active { border-color: #777772; background: #777772; color: #fff; }
+    .emoji-import-pane[hidden] { display: none; }
+    .emoji-import-text { width: 100%; height: 150px; padding: 11px; border: 1px solid #d9d9d4; border-radius: 10px; outline: 0; resize: vertical; color: #383835; font-size: 12px; line-height: 1.65; }
+    .emoji-import-text:focus { border-color: #777772; }
+    .emoji-import-hint { margin: 10px 0 0; color: #999994; font-size: 11px; line-height: 1.55; }
+    .message-bubble.image-bubble { padding: 4px; overflow: hidden; background: transparent; box-shadow: none; }
+    .message-bubble.image-bubble img { display: block; width: min(180px, 42vw); max-height: 220px; object-fit: contain; border-radius: 12px; }
     body.show-settings .home-shell, body.show-beautify .home-shell, body.show-chat .home-shell, body.show-thread .home-shell, body.show-thread #chatPage, body.show-thread-settings .home-shell, body.show-thread-settings #chatPage, body.show-thread-settings #threadPage { display: none; }
 
     @media (min-width: 600px) {
@@ -538,6 +591,11 @@
         <input class="note-name-input" id="beautifyUrlInput" type="url" placeholder="粘贴 URL" autocomplete="off" />
       </div>
       <div class="beautify-preview wallpaper" id="beautifyPreview">预览</div>
+      <div class="font-preset-panel" id="fontPresetPanel" hidden>
+        <select class="font-preset-select" id="fontPresetSelect" aria-label="已保存的字体预设"><option value="">选择字体预设</option></select>
+        <button class="font-preset-button" id="saveFontPreset" type="button">保存预设</button>
+        <button class="font-preset-button" id="deleteFontPreset" type="button">删除</button>
+      </div>
       <p class="beautify-dialog-error" id="beautifyDialogError" aria-live="polite"></p>
       <div class="note-dialog-actions">
         <button class="note-dialog-button" id="beautifyCancel" type="button">取消</button>
@@ -595,8 +653,38 @@
         </button>
       </div>
       <button class="message-send" type="submit" aria-label="发送消息"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2c-2.6 0-4.7 2.1-4.7 4.7 0 1.8 1 3.7 2.4 5.3 1.1 1.3 1.9 2.8 2.3 4.3.4-1.5 1.2-3 2.3-4.3 1.4-1.6 2.4-3.5 2.4-5.3 0-2.6-2.1-4.7-4.7-4.7Z"/><path d="M12 8.3v5.2"/></svg></button>
+      <section class="emoji-panel" id="emojiPanel" aria-label="表情包" aria-hidden="true">
+        <div class="emoji-panel-tabs" id="emojiPanelTabs">
+          <button class="emoji-import-open" id="emojiImportOpen" type="button">＋ 导入</button>
+        </div>
+        <div class="emoji-grid" id="emojiGrid"><p class="emoji-empty">点击“导入”添加表情包</p></div>
+      </section>
     </form>
   </main>
+  <div class="note-modal" id="emojiImportModal" role="dialog" aria-modal="true" aria-labelledby="emojiImportTitle" aria-hidden="true">
+    <form class="note-dialog emoji-import-dialog" id="emojiImportForm">
+      <h2 class="note-dialog-title" id="emojiImportTitle">导入表情包</h2>
+      <p class="note-dialog-copy">填写分类名称，并选择文件或粘贴表情列表。</p>
+      <input class="note-name-input emoji-category-input" id="emojiCategoryInput" type="text" maxlength="24" placeholder="分类名称，如：日常" autocomplete="off" required />
+      <div class="emoji-import-tabs">
+        <button class="emoji-import-tab active" id="emojiFileTab" type="button">选择文件</button>
+        <button class="emoji-import-tab" id="emojiPasteTab" type="button">粘贴内容</button>
+      </div>
+      <div class="emoji-import-pane" id="emojiFilePane">
+        <button class="beautify-file-button" id="emojiChooseFile" type="button">选择 TXT 文件</button>
+        <input id="emojiImportFile" type="file" accept="text/plain,.txt" hidden />
+      </div>
+      <div class="emoji-import-pane" id="emojiPastePane" hidden>
+        <textarea class="emoji-import-text" id="emojiImportText" placeholder="焦虑 https://example.com/anxious.gif&#10;开心：https://example.com/happy.png"></textarea>
+      </div>
+      <p class="emoji-import-hint">每行一个表情，支持“名称 URL”“名称:URL”及“名称：URL”。</p>
+      <p class="beautify-dialog-error" id="emojiImportError" aria-live="polite"></p>
+      <div class="note-dialog-actions">
+        <button class="note-dialog-button" id="emojiImportCancel" type="button">取消</button>
+        <button class="note-dialog-button primary" type="submit">确认导入</button>
+      </div>
+    </form>
+  </div>
   <main class="thread-settings-page" id="threadSettingsPage" aria-label="聊天设置页面">
     <header class="thread-settings-heading">
       <button class="thread-settings-back" id="threadSettingsBack" type="button" aria-label="返回聊天"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
@@ -639,7 +727,7 @@
           </div>
         </div>
         <div class="thread-settings-row">
-          <span class="thread-settings-label">表情包概率</span>
+          <span class="thread-settings-label">导入表情包概率</span>
           <div class="thread-settings-range">
             <input id="emojiProbabilityInput" type="number" min="0" max="100" value="20" aria-label="表情包概率" />
             <span>%</span>
@@ -776,6 +864,8 @@
       wallpaperName: '',
       globalFont: null,
       globalFontName: '',
+      fontPresets: [],
+      emojiCategories: [],
       conversations: []
     };
     const state = { ...defaultState };
@@ -860,6 +950,8 @@
     const beautifyUrlInput = document.getElementById('beautifyUrlInput');
     const beautifyPreview = document.getElementById('beautifyPreview');
     const beautifyDialogError = document.getElementById('beautifyDialogError');
+    const fontPresetPanel = document.getElementById('fontPresetPanel');
+    const fontPresetSelect = document.getElementById('fontPresetSelect');
     let wallpaperUrl = '';
     let fontUrl = '';
     let beautifyMode = 'wallpaper';
@@ -907,7 +999,7 @@
       }
       beautifyPreviewUrl = typeof source === 'string' ? source : URL.createObjectURL(source);
       if (beautifyMode === 'wallpaper') {
-        beautifyPreview.style.cssText = `background-image:url("${beautifyPreviewUrl}");background-position:center;background-size:cover;`;
+        beautifyPreview.style.cssText = `background-image:url("${beautifyPreviewUrl}");background-position:top center;background-size:100% auto;background-repeat:no-repeat;`;
         beautifyPreview.textContent = '';
       } else {
         const previewStyle = document.createElement('style');
@@ -917,6 +1009,25 @@
         beautifyPreview.style.cssText = 'font-family:"BeautifyPreviewFont",sans-serif;';
         beautifyPreview.textContent = 'Aa 字体预览 你好，世界';
       }
+    };
+    const renderFontPresets = () => {
+      const selectedId = fontPresetSelect.value;
+      fontPresetSelect.replaceChildren(new Option('选择字体预设', ''));
+      (state.fontPresets || []).forEach(preset => fontPresetSelect.add(new Option(preset.name, preset.id)));
+      if ((state.fontPresets || []).some(preset => preset.id === selectedId)) fontPresetSelect.value = selectedId;
+    };
+    const loadFontPreset = preset => {
+      if (!preset) return;
+      beautifyDraft = preset.source;
+      beautifyDraftName = preset.name;
+      beautifySourceType = typeof preset.source === 'string' ? 'url' : 'local';
+      beautifyUrlInput.value = typeof preset.source === 'string' ? preset.source : '';
+      beautifyLocalTab.classList.toggle('active', beautifySourceType === 'local');
+      beautifyUrlTab.classList.toggle('active', beautifySourceType === 'url');
+      beautifyLocalPane.hidden = beautifySourceType !== 'local';
+      beautifyUrlPane.hidden = beautifySourceType !== 'url';
+      beautifyChooseFile.textContent = beautifySourceType === 'local' ? preset.name : '选择本地字体';
+      renderBeautifyPreview();
     };
     const setBeautifySourceType = type => {
       beautifySourceType = type;
@@ -938,6 +1049,8 @@
       beautifyDialogCopy.textContent = mode === 'wallpaper' ? '选择本地图片，或粘贴在线图片 URL。' : '选择本地字体，或粘贴字体文件 URL。';
       beautifyChooseFile.textContent = mode === 'wallpaper' ? '选择本地图片' : '选择本地字体';
       beautifyPreview.className = `beautify-preview ${mode}`;
+      fontPresetPanel.hidden = mode !== 'font';
+      if (mode === 'font') renderFontPresets();
       setBeautifySourceType('local');
       beautifyModal.classList.add('open');
       beautifyModal.setAttribute('aria-hidden', 'false');
@@ -955,6 +1068,35 @@
     beautifyUrlTab.addEventListener('click', () => setBeautifySourceType('url'));
     beautifyChooseFile.addEventListener('click', () => (beautifyMode === 'wallpaper' ? wallpaperInput : fontInput).click());
     beautifyUrlInput.addEventListener('input', renderBeautifyPreview);
+    fontPresetSelect.addEventListener('change', () => loadFontPreset((state.fontPresets || []).find(preset => preset.id === fontPresetSelect.value)));
+    document.getElementById('saveFontPreset').addEventListener('click', () => {
+      const source = beautifySourceType === 'url' ? beautifyUrlInput.value.trim() : beautifyDraft;
+      if (!source) {
+        beautifyDialogError.textContent = '请先选择字体文件或填写字体 URL。';
+        return;
+      }
+      const suggestedName = beautifyDraftName || (typeof source === 'string' ? source.split('/').pop() : '') || '我的字体';
+      const name = window.prompt('预设名称', suggestedName)?.trim();
+      if (!name) return;
+      state.fontPresets = state.fontPresets || [];
+      const preset = { id: crypto.randomUUID(), name, source };
+      state.fontPresets.push(preset);
+      saveState();
+      renderFontPresets();
+      fontPresetSelect.value = preset.id;
+      beautifyDialogError.textContent = '字体预设已保存。';
+    });
+    document.getElementById('deleteFontPreset').addEventListener('click', () => {
+      const id = fontPresetSelect.value;
+      if (!id) {
+        beautifyDialogError.textContent = '请先选择要删除的预设。';
+        return;
+      }
+      state.fontPresets = (state.fontPresets || []).filter(preset => preset.id !== id);
+      saveState();
+      renderFontPresets();
+      beautifyDialogError.textContent = '字体预设已删除。';
+    });
     wallpaperInput.addEventListener('change', event => {
       const [file] = event.target.files;
       if (!file) return;
@@ -1063,13 +1205,23 @@
         item.className = `message ${message.mine ? 'outgoing' : 'incoming'}`;
         const messageAvatar = message.mine ? conversation.userAvatar : conversation.chatAvatar;
         item.innerHTML = `<span class="message-avatar">${avatarMarkup(messageAvatar)}</span><span class="message-bubble"></span>`;
-        item.querySelector('.message-bubble').textContent = message.text;
+        const bubble = item.querySelector('.message-bubble');
+        if (message.imageUrl) {
+          bubble.classList.add('image-bubble');
+          const image = document.createElement('img');
+          image.src = message.imageUrl;
+          image.alt = message.imageName || '表情';
+          image.loading = 'lazy';
+          bubble.append(image);
+        } else {
+          bubble.textContent = message.text;
+        }
         messageArea.append(item);
       });
       scrollMessagesToBottom();
     };
-    const replyEmojis = ['🙂', '😊', '🥰', '😌', '✨', '🌙', '💭', '🤍'];
     const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const getImportedEmojis = () => (state.emojiCategories || []).flatMap(category => category.items || []).filter(item => item?.url);
     const scheduleAutoReplies = conversation => {
       const cards = (conversation.replyCards || []).filter(Boolean);
       if (!cards.length) return;
@@ -1089,11 +1241,15 @@
         const delay = randomBetween(minDelay, maxDelay) * 1000;
         window.setTimeout(() => {
           const card = cards[randomBetween(0, cards.length - 1)];
-          const text = Math.random() * 100 < emojiProbability
-            ? `${card} ${replyEmojis[randomBetween(0, replyEmojis.length - 1)]}`
-            : card;
+          const importedEmojis = getImportedEmojis();
+          const shouldSendEmoji = importedEmojis.length > 0 && Math.random() * 100 < emojiProbability;
           conversation.messages = conversation.messages || [];
-          conversation.messages.push({ text, mine: false });
+          if (shouldSendEmoji) {
+            const emoji = importedEmojis[randomBetween(0, importedEmojis.length - 1)];
+            conversation.messages.push({ imageUrl: emoji.url, imageName: emoji.name, mine: false });
+          } else {
+            conversation.messages.push({ text: card, mine: false });
+          }
           if (state.currentConversationId === conversation.id) renderMessages(conversation);
           saveState();
           sendReply(index + 1);
@@ -1103,11 +1259,13 @@
     };
     let threadWallpaperUrl = '';
     const applyThreadWallpaper = conversation => {
-      if (threadWallpaperUrl) URL.revokeObjectURL(threadWallpaperUrl);
-      threadWallpaperUrl = conversation?.wallpaper ? URL.createObjectURL(conversation.wallpaper) : '';
+      if (threadWallpaperUrl?.startsWith('blob:')) URL.revokeObjectURL(threadWallpaperUrl);
+      const wallpaper = conversation?.wallpaper;
+      threadWallpaperUrl = typeof wallpaper === 'string' ? wallpaper : wallpaper ? URL.createObjectURL(wallpaper) : '';
       messageArea.style.backgroundImage = threadWallpaperUrl ? `url("${threadWallpaperUrl}")` : '';
-      messageArea.style.backgroundSize = threadWallpaperUrl ? 'cover' : '';
-      messageArea.style.backgroundPosition = threadWallpaperUrl ? 'center' : '';
+      messageArea.style.backgroundSize = threadWallpaperUrl ? '100% auto' : '';
+      messageArea.style.backgroundPosition = threadWallpaperUrl ? 'top center' : '';
+      messageArea.style.backgroundRepeat = threadWallpaperUrl ? 'repeat-y' : '';
       messageArea.style.backgroundAttachment = threadWallpaperUrl ? 'local' : '';
     };
     const openThread = conversation => {
@@ -1122,6 +1280,7 @@
     const closeThread = () => {
       document.body.classList.remove('show-thread');
       threadPage.classList.remove('active');
+      document.getElementById('emojiPanel')?.classList.remove('open');
     };
     document.getElementById('threadBack').addEventListener('click', closeThread);
     const threadSettingsPage = document.getElementById('threadSettingsPage');
@@ -1301,6 +1460,190 @@
       });
       reader.readAsDataURL(file);
     });
+    const emojiPanel = document.getElementById('emojiPanel');
+    const emojiPanelTabs = document.getElementById('emojiPanelTabs');
+    const emojiGrid = document.getElementById('emojiGrid');
+    const emojiButton = document.querySelector('.message-emoji');
+    const emojiImportModal = document.getElementById('emojiImportModal');
+    const emojiImportForm = document.getElementById('emojiImportForm');
+    const emojiCategoryInput = document.getElementById('emojiCategoryInput');
+    const emojiFileTab = document.getElementById('emojiFileTab');
+    const emojiPasteTab = document.getElementById('emojiPasteTab');
+    const emojiFilePane = document.getElementById('emojiFilePane');
+    const emojiPastePane = document.getElementById('emojiPastePane');
+    const emojiImportFile = document.getElementById('emojiImportFile');
+    const emojiImportText = document.getElementById('emojiImportText');
+    const emojiChooseFile = document.getElementById('emojiChooseFile');
+    const emojiImportError = document.getElementById('emojiImportError');
+    let activeEmojiCategoryId = '';
+    let emojiImportMode = 'file';
+    let emojiFileContent = '';
+    const closeEmojiPanel = () => {
+      emojiPanel.classList.remove('open');
+      emojiPanel.setAttribute('aria-hidden', 'true');
+      emojiButton.setAttribute('aria-expanded', 'false');
+    };
+    const parseEmojiList = content => String(content || '').split(/\r?\n/).map(line => {
+      const value = line.trim();
+      if (!value) return null;
+      const urlMatch = value.match(/https?:\/\/\S+/i);
+      if (!urlMatch) return null;
+      const url = urlMatch[0].replace(/[，,;；]+$/, '');
+      const name = value.slice(0, urlMatch.index).replace(/[\s:：]+$/, '').trim() || '表情';
+      try {
+        const parsed = new URL(url);
+        if (!['http:', 'https:'].includes(parsed.protocol)) return null;
+      } catch {
+        return null;
+      }
+      return { name, url };
+    }).filter(Boolean);
+    const renderEmojiPanel = () => {
+      const categories = state.emojiCategories || [];
+      if (!categories.some(category => category.id === activeEmojiCategoryId)) activeEmojiCategoryId = categories[0]?.id || '';
+      emojiPanelTabs.querySelectorAll('.emoji-tab').forEach(tab => tab.remove());
+      const importButton = document.getElementById('emojiImportOpen');
+      categories.forEach(category => {
+        const tab = document.createElement('button');
+        tab.type = 'button';
+        tab.className = `emoji-tab${category.id === activeEmojiCategoryId ? ' active' : ''}`;
+        tab.textContent = category.name;
+        tab.title = category.name;
+        tab.addEventListener('click', () => {
+          activeEmojiCategoryId = category.id;
+          renderEmojiPanel();
+        });
+        emojiPanelTabs.insertBefore(tab, importButton);
+      });
+      emojiGrid.replaceChildren();
+      const activeCategory = categories.find(category => category.id === activeEmojiCategoryId);
+      if (!activeCategory?.items?.length) {
+        const empty = document.createElement('p');
+        empty.className = 'emoji-empty';
+        empty.textContent = categories.length ? '这个分类还没有表情' : '点击“导入”添加表情包';
+        emojiGrid.append(empty);
+        return;
+      }
+      activeCategory.items.forEach(emoji => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'emoji-item';
+        button.title = emoji.name;
+        const image = document.createElement('img');
+        image.src = emoji.url;
+        image.alt = emoji.name;
+        image.loading = 'lazy';
+        const label = document.createElement('span');
+        label.textContent = emoji.name;
+        button.append(image, label);
+        button.addEventListener('click', () => {
+          const conversation = state.conversations.find(item => item.id === state.currentConversationId);
+          if (!conversation) return;
+          conversation.messages = conversation.messages || [];
+          conversation.messages.push({ imageUrl: emoji.url, imageName: emoji.name, mine: true });
+          renderMessages(conversation);
+          saveState();
+          closeEmojiPanel();
+          if (conversation.autoReply !== false) scheduleAutoReplies(conversation);
+        });
+        emojiGrid.append(button);
+      });
+    };
+    const setEmojiImportMode = mode => {
+      emojiImportMode = mode;
+      emojiFileTab.classList.toggle('active', mode === 'file');
+      emojiPasteTab.classList.toggle('active', mode === 'paste');
+      emojiFilePane.hidden = mode !== 'file';
+      emojiPastePane.hidden = mode !== 'paste';
+      emojiImportError.textContent = '';
+      if (mode === 'paste') emojiImportText.focus();
+    };
+    const openEmojiImport = () => {
+      closeEmojiPanel();
+      emojiCategoryInput.value = '';
+      emojiImportText.value = '';
+      emojiImportFile.value = '';
+      emojiFileContent = '';
+      emojiChooseFile.textContent = '选择 TXT 文件';
+      emojiImportError.textContent = '';
+      setEmojiImportMode('file');
+      emojiImportModal.classList.add('open');
+      emojiImportModal.setAttribute('aria-hidden', 'false');
+      emojiCategoryInput.focus();
+    };
+    const closeEmojiImport = () => {
+      emojiImportModal.classList.remove('open');
+      emojiImportModal.setAttribute('aria-hidden', 'true');
+    };
+    emojiButton.setAttribute('aria-expanded', 'false');
+    emojiButton.addEventListener('click', () => {
+      const willOpen = !emojiPanel.classList.contains('open');
+      if (willOpen) {
+        renderEmojiPanel();
+        emojiPanel.classList.add('open');
+        emojiPanel.setAttribute('aria-hidden', 'false');
+        emojiButton.setAttribute('aria-expanded', 'true');
+      } else {
+        closeEmojiPanel();
+      }
+    });
+    document.getElementById('emojiImportOpen').addEventListener('click', openEmojiImport);
+    emojiFileTab.addEventListener('click', () => setEmojiImportMode('file'));
+    emojiPasteTab.addEventListener('click', () => setEmojiImportMode('paste'));
+    emojiChooseFile.addEventListener('click', () => emojiImportFile.click());
+    emojiImportFile.addEventListener('change', event => {
+      const [file] = event.target.files;
+      if (!file) return;
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        emojiFileContent = String(reader.result || '');
+        emojiChooseFile.textContent = file.name;
+        emojiImportError.textContent = '';
+      });
+      reader.readAsText(file);
+    });
+    document.getElementById('emojiImportCancel').addEventListener('click', closeEmojiImport);
+    emojiImportModal.addEventListener('click', event => {
+      if (event.target === emojiImportModal) closeEmojiImport();
+    });
+    emojiImportForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const name = emojiCategoryInput.value.trim();
+      const content = emojiImportMode === 'file' ? emojiFileContent : emojiImportText.value;
+      const items = parseEmojiList(content);
+      if (!name) {
+        emojiImportError.textContent = '请输入分类名称。';
+        return;
+      }
+      if (!content.trim()) {
+        emojiImportError.textContent = emojiImportMode === 'file' ? '请先选择一个 TXT 文件。' : '请粘贴表情列表。';
+        return;
+      }
+      if (!items.length) {
+        emojiImportError.textContent = '没有识别到有效内容，请检查每行是否包含 http(s) 图片链接。';
+        return;
+      }
+      state.emojiCategories = state.emojiCategories || [];
+      const existing = state.emojiCategories.find(category => category.name === name);
+      if (existing) {
+        const knownUrls = new Set((existing.items || []).map(item => item.url));
+        existing.items = [...(existing.items || []), ...items.filter(item => !knownUrls.has(item.url))];
+        activeEmojiCategoryId = existing.id;
+      } else {
+        const category = { id: crypto.randomUUID(), name, items };
+        state.emojiCategories.push(category);
+        activeEmojiCategoryId = category.id;
+      }
+      saveState();
+      renderEmojiPanel();
+      closeEmojiImport();
+      emojiPanel.classList.add('open');
+      emojiPanel.setAttribute('aria-hidden', 'false');
+      emojiButton.setAttribute('aria-expanded', 'true');
+    });
+    document.addEventListener('click', event => {
+      if (emojiPanel.classList.contains('open') && !emojiPanel.contains(event.target) && !emojiButton.contains(event.target)) closeEmojiPanel();
+    });
     document.getElementById('messageForm').addEventListener('submit', event => {
       event.preventDefault();
       const text = messageInput.value.trim();
@@ -1311,6 +1654,7 @@
       messageInput.value = '';
       renderMessages(conversation);
       saveState();
+      closeEmojiPanel();
       if (conversation.autoReply !== false) scheduleAutoReplies(conversation);
     });
     const closeNoteModal = () => {
@@ -1418,6 +1762,8 @@
       }
       if (state.wallpaper) applyWallpaper(state.wallpaper, state.wallpaperName);
       if (state.globalFont) applyGlobalFont(state.globalFont, state.globalFontName);
+      state.emojiCategories = Array.isArray(state.emojiCategories) ? state.emojiCategories : [];
+      renderEmojiPanel();
       renderConversations();
     };
 
@@ -1426,4 +1772,6 @@
     });
   </script>
 </body>
+</html>
+dy>
 </html>
