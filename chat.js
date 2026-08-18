@@ -131,7 +131,11 @@ document.getElementById('chatApp').addEventListener('click', () => {
     const closeThread = () => {
       document.body.classList.remove('show-thread');
       threadPage.classList.remove('active');
-      document.getElementById('emojiPanel')?.classList.remove('open');
+      const panel = document.getElementById('emojiPanel');
+      const button = document.querySelector('#messageForm .message-emoji');
+      panel?.classList.remove('open');
+      panel?.setAttribute('aria-hidden', 'true');
+      button?.setAttribute('aria-expanded', 'false');
     };
     document.getElementById('threadBack').addEventListener('click', closeThread);
     const threadSettingsPage = document.getElementById('threadSettingsPage');
@@ -314,7 +318,8 @@ document.getElementById('chatApp').addEventListener('click', () => {
     const emojiPanel = document.getElementById('emojiPanel');
     const emojiPanelTabs = document.getElementById('emojiPanelTabs');
     const emojiGrid = document.getElementById('emojiGrid');
-    const emojiButton = document.querySelector('.message-emoji');
+    const messageForm = document.getElementById('messageForm');
+    const emojiButton = messageForm.querySelector('.message-emoji');
     const emojiImportModal = document.getElementById('emojiImportModal');
     const emojiImportForm = document.getElementById('emojiImportForm');
     const emojiCategoryInput = document.getElementById('emojiCategoryInput');
@@ -495,7 +500,7 @@ document.getElementById('chatApp').addEventListener('click', () => {
     document.addEventListener('click', event => {
       if (emojiPanel.classList.contains('open') && !emojiPanel.contains(event.target) && !emojiButton.contains(event.target)) closeEmojiPanel();
     });
-    document.getElementById('messageForm').addEventListener('submit', event => {
+    messageForm.addEventListener('submit', event => {
       event.preventDefault();
       const text = messageInput.value.trim();
       const conversation = state.conversations.find(item => item.id === state.currentConversationId);
