@@ -25,6 +25,7 @@
   const settingsPage = document.getElementById('transmissionSettingsPage');
   const settingsChatNameInput = document.getElementById('transmissionSettingsChatNameInput');
   const settingsUserNameInput = document.getElementById('transmissionSettingsUserNameInput');
+  const settingsDivinerNameInput = document.getElementById('transmissionSettingsDivinerNameInput');
   const promptModal = document.getElementById('transmissionPromptModal');
   const promptForm = document.getElementById('transmissionPromptForm');
   const promptInput = document.getElementById('transmissionPromptInput');
@@ -260,6 +261,7 @@
     if (!conversation) return;
     settingsChatNameInput.value = conversation.chatName || conversation.name || '';
     settingsUserNameInput.value = conversation.userName || conversation.name || '';
+    settingsDivinerNameInput.value = conversation.divinerName || conversation.chatName || conversation.name || '';
     promptInput.value = conversation.systemPrompt || '';
     promptStatus.textContent = conversation.systemPrompt ? '已设置' : '未设置';
     settingsChatAvatar.innerHTML = avatarMarkup(conversation.chatAvatar);
@@ -309,9 +311,11 @@
     const conversation = activeConversation();
     const chatName = settingsChatNameInput.value.trim();
     const userName = settingsUserNameInput.value.trim();
-    if (!conversation || !chatName || !userName) return;
+    const divinerName = settingsDivinerNameInput.value.trim();
+    if (!conversation || !chatName || !userName || !divinerName) return;
     conversation.chatName = chatName;
     conversation.userName = userName;
+    conversation.divinerName = divinerName;
     conversation.name = chatName;
     threadName.textContent = chatName;
     renderList();
@@ -319,7 +323,7 @@
     saveState();
     closeSettings();
   });
-  [settingsChatNameInput, settingsUserNameInput].forEach(input => input.addEventListener('keydown', event => {
+  [settingsChatNameInput, settingsUserNameInput, settingsDivinerNameInput].forEach(input => input.addEventListener('keydown', event => {
     if (event.key === 'Enter') {
       event.preventDefault();
       document.getElementById('transmissionSettingsSave').click();
@@ -387,11 +391,44 @@
     event.preventDefault();
     const name = nameInput.value.trim();
     if (!name) return;
-    conversations().push({ id: crypto.randomUUID(), name, chatName: name, userName: 'User', systemPrompt: '', messages: [] });
+    conversations().push({ id: crypto.randomUUID(), name, chatName: name, userName: 'User', divinerName: name, systemPrompt: '', messages: [] });
     renderList();
     saveState();
     closeModal();
   });
+  const getPromptVariables = conversation => {
+    const messages = conversation.messages || [];
+    const tarotIndex = messages.findLastIndex(message => message.mine && message.tarot);
+    const messagesBeforeTarot = tarotIndex >= 0 ? messages.slice(0, tarotIndex) : messages;
+    const lastAssistantIndex = messagesBeforeTarot.findLastIndex(message =>
+      !message.mine && !message.waiting && !message.reading && message.text
+    );
+    const currentQuestion = messagesBeforeTarot
+      .slice(lastAssistantIndex + 1)
+      .filter(message => message.mine && !message.tarot && !message.reading && !message.waiting && message.text)
+      .map(message => message.text.trim())
+      .filter(Boolean)
+      .join('\\n') || '用户没有提出明确问题';
+    const tarotMessage = tarotIndex >= 0 ? messages[tarotIndex] : null;
+    const cards = tarotMessage?.text?.trim() || '本次没有抽牌';
+    const now = new Date();
+    return {
+      chatName: conversation.chatName || conversation.name || '',
+      userName: conversation.userName || 'User',
+      divinerName: conversation.divinerName || conversation.chatName || conversation.name || '',
+      currentQuestion,
+      cards,
+      cardCount: String(tarotMessage?.tarotCards?.length || 0),
+      date: now.toLocaleDateString('zh-CN'),
+      time: now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+    };
+  };
+
+  const renderPromptTemplate = (template, variables) => template.replace(
+    /\\{\\{\\s*([a-zA-Z][\\w]*)\\s*\\}\\}/g,
+    (placeholder, name) => Object.hasOwn(variables, name) ? String(variables[name]) : placeholder
+  );
+
   const requestTarotReply = async conversation => {
     const apiSettings = window.getDreamApiSettings?.();
     const waitingMessage = { text: '正在倾听牌的回音…', mine: false, waiting: true };
@@ -408,7 +445,10 @@
         role: message.mine ? 'user' : 'assistant',
         content: message.text
       }));
-      const systemPrompt = conversation.systemPrompt?.trim();
+      const systemPrompt = renderPromptTemplate(
+        conversation.systemPrompt?.trim() || '',
+        getPromptVariables(conversation)
+      );
       const response = await fetch(`${apiSettings.apiUrl.replace(/\/+$/, '')}/chat/completions`, {
         method: 'POST',
         headers: {

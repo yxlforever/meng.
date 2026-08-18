@@ -242,9 +242,10 @@
             <span>User</span>
           </div>
         </div>
-        <div class="thread-settings-name-fields">
-          <input class="thread-settings-name-input" id="transmissionSettingsChatNameInput" type="text" maxlength="30" placeholder="填写备注" autocomplete="off" aria-label="Chat 备注" />
-          <input class="thread-settings-name-input" id="transmissionSettingsUserNameInput" type="text" maxlength="30" placeholder="填写备注" autocomplete="off" aria-label="User 备注" />
+        <div class="thread-settings-name-fields transmission-settings-name-fields">
+          <input class="thread-settings-name-input" id="transmissionSettingsChatNameInput" type="text" maxlength="30" placeholder="传讯对象名称" autocomplete="off" aria-label="传讯对象名称" />
+          <input class="thread-settings-name-input" id="transmissionSettingsUserNameInput" type="text" maxlength="30" placeholder="用户名称" autocomplete="off" aria-label="用户名称" />
+          <input class="thread-settings-name-input" id="transmissionSettingsDivinerNameInput" type="text" maxlength="30" placeholder="占卜师名称" autocomplete="off" aria-label="占卜师名称" />
         </div>
       </div>
       <div class="thread-settings-divider" aria-hidden="true"><span></span></div>
@@ -257,7 +258,7 @@
   <div class="note-modal" id="transmissionPromptModal" role="dialog" aria-modal="true" aria-labelledby="transmissionPromptTitle" aria-hidden="true">
     <form class="note-dialog transmission-prompt-dialog" id="transmissionPromptForm">
       <h2 class="note-dialog-title" id="transmissionPromptTitle">自定义 systemPrompt</h2>
-      <p class="note-dialog-copy">这里填写的内容将作为当前传讯会话唯一的 systemPrompt，用来设定 Chat 的身份、语气和行为。</p>
+      <p class="note-dialog-copy transmission-prompt-copy">这里填写的内容将作为当前传讯会话唯一的 systemPrompt。可用变量：<code>{{chatName}}</code> 传讯对象名称、<code>{{userName}}</code> 用户名称、<code>{{divinerName}}</code> 占卜师名称、<code>{{currentQuestion}}</code> 最新一轮普通消息、<code>{{cards}}</code> 本次抽牌结果、<code>{{cardCount}}</code> 抽牌数量、<code>{{date}}</code> 当前日期、<code>{{time}}</code> 当前时间。</p>
       <textarea class="transmission-prompt-input" id="transmissionPromptInput" maxlength="5000" placeholder="填写自定义 systemPrompt" aria-label="自定义 systemPrompt"></textarea>
       <div class="note-dialog-actions">
         <button class="note-dialog-button" id="transmissionPromptCancel" type="button">取消</button>
