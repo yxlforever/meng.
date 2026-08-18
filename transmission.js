@@ -192,7 +192,16 @@
       item.innerHTML = `<span class="conversation-avatar">${avatarMarkup(conversation.chatAvatar)}</span><span class="conversation-name"></span>`;
       item.querySelector('.conversation-name').textContent = chatName;
       item.addEventListener('click', () => openThread(conversation));
-      list.append(item);
+      const row = window.createSwipeDeleteRow(item, {
+        deleteLabel: `删除与${chatName}的传讯`,
+        onDelete: () => {
+          state.transmissions = conversations().filter(entry => entry.id !== conversation.id);
+          if (activeId === conversation.id) activeId = '';
+          saveState();
+          renderList();
+        }
+      });
+      list.append(row);
     });
   };
 

@@ -1,4 +1,9 @@
 .transmission-prompt-dialog { width: min(100%, 440px); }
+#transmissionList .swipe-delete-row { position: relative; overflow: hidden; border-radius: 14px; background: #050505; }
+#transmissionList .swipe-delete-row .conversation-item { position: relative; z-index: 1; transition: transform .22s cubic-bezier(.2,.8,.2,1); touch-action: pan-y; }
+#transmissionList .swipe-delete-row.swiping .conversation-item { transition: none; }
+#transmissionList .swipe-delete-action { position: absolute; inset: 0 0 0 auto; width: 82px; padding: 0; border: 0; background: #050505; color: #fff; font-size: 13px; cursor: pointer; }
+#transmissionList .swipe-delete-action:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
 .transmission-prompt-copy { line-height: 1.75; }
 .transmission-prompt-copy code { display: inline-block; margin: 1px 2px; padding: 0 4px; border-radius: 4px; background: #eeeeea; color: #555550; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .9em; }
 .transmission-settings-name-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); width: min(100%, 440px); gap: 16px; }

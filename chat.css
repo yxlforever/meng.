@@ -13,7 +13,12 @@
     .notes-heart:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 50%; }
     .notes-heart.active svg { fill: currentColor; }
     .conversation-list { display: grid; gap: 8px; margin-top: 17px; }
-    .conversation-item { display: flex; align-items: center; gap: 13px; width: 100%; padding: 10px 4px; border: 0; border-radius: 14px; background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
+    .swipe-delete-row { position: relative; overflow: hidden; border-radius: 14px; background: #050505; }
+    .swipe-delete-row .conversation-item { position: relative; z-index: 1; transition: transform .22s cubic-bezier(.2,.8,.2,1); touch-action: pan-y; }
+    .swipe-delete-row.swiping .conversation-item { transition: none; }
+    .swipe-delete-action { position: absolute; inset: 0 0 0 auto; width: 82px; padding: 0; border: 0; background: #050505; color: #fff; font-size: 13px; cursor: pointer; }
+    .swipe-delete-action:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
+    .conversation-item { display: flex; align-items: center; gap: 13px; width: 100%; padding: 10px 4px; border: 0; border-radius: 14px; background: var(--white); color: var(--ink); text-align: left; cursor: pointer; }
     .conversation-item:hover { background: #f4f4f2; }
     .conversation-avatar { display: grid; width: 48px; height: 48px; flex: 0 0 48px; place-items: center; border-radius: 50%; background: #d3d3d0; color: #8c8c88; }
     .conversation-avatar { overflow: hidden; }

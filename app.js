@@ -3,9 +3,7 @@ const applySavedState = savedState => {
       document.querySelectorAll('[contenteditable="true"]').forEach(field => {
         field.textContent = state[field.id];
       });
-      document.querySelectorAll('.day').forEach(day => {
-        day.classList.toggle('active', day.dataset.day === state.activeDay);
-      });
+      window.updateSystemDay?.();
       document.querySelectorAll('.toggle').forEach(toggle => {
         const toggleKey = toggle.dataset.storageKey;
         toggle.classList.toggle('on', state.toggles[toggleKey] ?? toggle.classList.contains('on'));
@@ -14,6 +12,7 @@ const applySavedState = savedState => {
         avatarImage.src = URL.createObjectURL(state.avatar);
         avatarImage.classList.add('has-image');
       }
+      if (state.profileBackground) window.applyProfileBackground?.(state.profileBackground, state.profileBackgroundTheme);
       if (state.wallpaper) applyWallpaper(state.wallpaper, state.wallpaperName);
       if (state.globalFont) applyGlobalFont(state.globalFont, state.globalFontName);
       if (state.desktopIcon) applyDesktopIcon(state.desktopIcon, state.desktopIconName);

@@ -29,7 +29,16 @@
         item.innerHTML = `<span class="conversation-avatar">${avatarMarkup(conversation.chatAvatar)}</span><span class="conversation-name"></span>`;
         item.querySelector('.conversation-name').textContent = conversation.name;
         item.addEventListener('click', () => openThread(conversation));
-        conversationList.append(item);
+        const row = window.createSwipeDeleteRow(item, {
+          deleteLabel: `删除与${conversation.name}的对话`,
+          onDelete: () => {
+            state.conversations = state.conversations.filter(entry => entry.id !== conversation.id);
+            if (state.currentConversationId === conversation.id) state.currentConversationId = '';
+            saveState();
+            renderConversations();
+          }
+        });
+        conversationList.append(row);
       });
     };
     const threadPage = document.getElementById('threadPage');
@@ -56,27 +65,28 @@
         if (document.body.classList.contains('show-thread')) keepLatestMessageVisible();
       });
     }
+    const appendMessage = (conversation, message) => {
+      const item = document.createElement('div');
+      item.className = `message ${message.mine ? 'outgoing' : 'incoming'}`;
+      const messageAvatar = message.mine ? conversation.userAvatar : conversation.chatAvatar;
+      item.innerHTML = `<span class="message-avatar">${avatarMarkup(messageAvatar)}</span><span class="message-bubble"></span>`;
+      const bubble = item.querySelector('.message-bubble');
+      if (message.imageUrl) {
+        item.classList.add('image-message');
+        bubble.classList.add('image-bubble');
+        const image = document.createElement('img');
+        image.src = message.imageUrl;
+        image.alt = message.imageName || '表情';
+        image.loading = 'lazy';
+        bubble.append(image);
+      } else {
+        bubble.textContent = message.text;
+      }
+      messageArea.append(item);
+    };
     const renderMessages = conversation => {
       messageArea.replaceChildren();
-      (conversation.messages || []).forEach(message => {
-        const item = document.createElement('div');
-        item.className = `message ${message.mine ? 'outgoing' : 'incoming'}`;
-        const messageAvatar = message.mine ? conversation.userAvatar : conversation.chatAvatar;
-        item.innerHTML = `<span class="message-avatar">${avatarMarkup(messageAvatar)}</span><span class="message-bubble"></span>`;
-        const bubble = item.querySelector('.message-bubble');
-        if (message.imageUrl) {
-          item.classList.add('image-message');
-          bubble.classList.add('image-bubble');
-          const image = document.createElement('img');
-          image.src = message.imageUrl;
-          image.alt = message.imageName || '表情';
-          image.loading = 'lazy';
-          bubble.append(image);
-        } else {
-          bubble.textContent = message.text;
-        }
-        messageArea.append(item);
-      });
+      (conversation.messages || []).forEach(message => appendMessage(conversation, message));
       scrollMessagesToBottom();
     };
     const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -539,10 +549,12 @@
       const conversation = state.conversations.find(item => item.id === state.currentConversationId);
       if (!text || !conversation) return;
       conversation.messages = conversation.messages || [];
-      conversation.messages.push({ text, mine: true });
+      const message = { text, mine: true };
+      conversation.messages.push(message);
       messageInput.value = '';
-      renderMessages(conversation);
-      saveState();
+      appendMessage(conversation, message);
+      scrollMessagesToBottom();
+      window.setTimeout(saveState, 0);
       closeEmojiPanel();
       if (conversation.autoReply !== false) scheduleAutoReplies(conversation);
     });

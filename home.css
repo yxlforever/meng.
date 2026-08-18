@@ -70,6 +70,22 @@
       background-size: 41px 37px, 53px 49px, 47px 43px, 61px 57px;
     }
 
+    .profile-card.has-background { background-size: cover; background-position: center; border-color: rgba(255,255,255,.45); }
+    .profile-card.has-background::before { opacity: 1; background: linear-gradient(110deg, rgba(255,255,255,.46), rgba(255,255,255,.1)); }
+    .profile-card.has-background.background-dark::before { background: linear-gradient(110deg, rgba(0,0,0,.42), rgba(0,0,0,.12)); }
+    .profile-background-button { position: absolute; z-index: 3; top: 12px; right: 12px; width: 34px; height: 34px; display: grid; padding: 0; place-items: center; border: 0; border-radius: 50%; background: transparent; color: #777772; opacity: .32; cursor: pointer; transition: opacity .2s ease, background .2s ease; }
+    .profile-background-button:hover, .profile-background-button:focus-visible { opacity: 1; background: rgba(255,255,255,.68); outline: none; }
+    .profile-background-button svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .profile-card.has-background .profile-background-button { color: #20201e; background: rgba(255,255,255,.46); opacity: .72; }
+    .profile-card.background-dark .profile-background-button { color: #fff; background: rgba(0,0,0,.24); }
+    .profile-card.background-dark .profile-name, .profile-card.background-dark .profile-handle, .profile-card.background-dark .bio, .profile-card.background-dark .profile-decor { color: #fff; text-shadow: 0 1px 8px rgba(0,0,0,.42); }
+    .profile-card.background-dark .week-strip { border-color: rgba(255,255,255,.38); background: rgba(0,0,0,.23); }
+    .profile-card.background-dark .day { color: rgba(255,255,255,.82); }
+    .profile-card.background-dark .day.active { color: #fff; background: rgba(255,255,255,.25); }
+    .profile-card.has-background:not(.background-dark) .profile-name { color: #20201e; }
+    .profile-card.has-background:not(.background-dark) .profile-handle, .profile-card.has-background:not(.background-dark) .bio, .profile-card.has-background:not(.background-dark) .profile-decor { color: #454541; }
+    .profile-background-dialog { width: min(calc(100% - 36px), 400px); }
+
     .profile-main { position: relative; z-index: 1; display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 18px; align-items: center; }
     .avatar-button {
       position: relative;
