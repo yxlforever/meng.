@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-title" content="梦" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="application-name" content="梦" />
-  <link rel="apple-touch-icon" href="https://img.baibai.cv/f/WNnAi4/IMG_9974.jpeg" />
-  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" id="appleTouchIcon" href="https://img.baibai.cv/f/WNnAi4/IMG_9974.jpeg" />
+  <link rel="manifest" id="appManifestLink" href="manifest.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
@@ -94,11 +94,34 @@
       <input id="wallpaperInput" type="file" accept="image/*" hidden />
       <input id="fontInput" type="file" accept=".ttf,.otf,.woff,.woff2,font/ttf,font/otf,font/woff,font/woff2" hidden />
     </section>
+    <div class="beautify-section-divider" aria-hidden="true"><span></span></div>
+    <section class="beautify-card beautify-icon-card" aria-label="桌面图标设置">
+      <button class="beautify-option" id="desktopIconOption" type="button">
+        <span class="beautify-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="3"/><path d="M9 17.5h6"/></svg></span>
+        <span class="beautify-option-copy"><span class="beautify-option-title">更换桌面图标</span><span class="beautify-option-status" id="desktopIconStatus">使用默认 PWA 图标</span></span>
+        <span class="beautify-option-arrow" aria-hidden="true">›</span>
+      </button>
+      <button class="beautify-option" id="appIconOption" type="button">
+        <span class="beautify-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg></span>
+        <span class="beautify-option-copy"><span class="beautify-option-title">更换应用图标</span><span class="beautify-option-status" id="appIconStatus">使用默认应用图标</span></span>
+        <span class="beautify-option-arrow" aria-hidden="true">›</span>
+      </button>
+      <input id="desktopIconInput" type="file" accept="image/*" hidden />
+      <input id="appIconInput" type="file" accept="image/*" hidden />
+    </section>
   </main>
   <div class="note-modal" id="beautifyModal" role="dialog" aria-modal="true" aria-labelledby="beautifyDialogTitle" aria-hidden="true">
     <form class="note-dialog beautify-dialog" id="beautifyForm">
       <h2 class="note-dialog-title" id="beautifyDialogTitle">替换桌面壁纸</h2>
       <p class="note-dialog-copy" id="beautifyDialogCopy">选择本地图片，或粘贴在线图片 URL。</p>
+      <div class="app-icon-picker" id="appIconPicker" hidden aria-label="选择要更换图标的应用">
+        <button class="app-icon-choice" type="button" data-app-icon-target="chat"><span class="app-icon-choice-preview" aria-hidden="true"></span><span>聊天</span></button>
+        <button class="app-icon-choice" type="button" data-app-icon-target="archive"><span class="app-icon-choice-preview" aria-hidden="true"></span><span>档案</span></button>
+        <button class="app-icon-choice" type="button" data-app-icon-target="transmission"><span class="app-icon-choice-preview" aria-hidden="true"></span><span>传讯</span></button>
+        <button class="app-icon-choice" type="button" data-app-icon-target="theater"><span class="app-icon-choice-preview" aria-hidden="true"></span><span>小剧场</span></button>
+        <button class="app-icon-choice" type="button" data-app-icon-target="settings"><span class="app-icon-choice-preview" aria-hidden="true"></span><span>设置</span></button>
+        <button class="app-icon-choice" type="button" data-app-icon-target="beautify"><span class="app-icon-choice-preview" aria-hidden="true"></span><span>美化</span></button>
+      </div>
       <div class="beautify-dialog-tabs">
         <button class="beautify-dialog-tab active" id="beautifyLocalTab" type="button">本地文件</button>
         <button class="beautify-dialog-tab" id="beautifyUrlTab" type="button">URL</button>
@@ -443,19 +466,19 @@
     </section>
 
     <nav class="quick-apps" aria-label="常用应用">
-      <button class="app" id="chatApp" type="button" aria-label="聊天">
+      <button class="app" id="chatApp" type="button" aria-label="聊天" data-app-icon-id="chat">
         <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 5.5h14v10H9.5L6 18v-2.5H5v-10Z"/><path d="M8.5 10h7M8.5 13h4"/></svg></span>
         <span class="app-name">聊天</span>
       </button>
-      <button class="app" type="button" aria-label="档案">
+      <button class="app" type="button" aria-label="档案" data-app-icon-id="archive">
         <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 6.5h6l1.8 2h7.2v9H4.5v-11Z"/><path d="M4.5 9h15"/></svg></span>
         <span class="app-name">档案</span>
       </button>
-      <button class="app" id="messageApp" type="button" aria-label="传讯">
+      <button class="app" id="messageApp" type="button" aria-label="传讯" data-app-icon-id="transmission">
         <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 5 16 7-16 7 3.2-6.1L14 12 7.2 11 4 5Z"/><path d="M7.2 11 4 5"/></svg></span>
         <span class="app-name">传讯</span>
       </button>
-      <button class="app" type="button" aria-label="小剧场">
+      <button class="app" type="button" aria-label="小剧场" data-app-icon-id="theater">
         <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 5.5h15v13h-15z"/><path d="m8 5.5 2 13M16 5.5l-2 13M4.5 10h15M4.5 14h15"/></svg></span>
         <span class="app-name">小剧场</span>
       </button>
@@ -463,11 +486,11 @@
 
     <footer class="bottom">
       <nav class="apps" aria-label="应用入口">
-        <button class="app" id="settingsApp" type="button" aria-label="设置">
+        <button class="app" id="settingsApp" type="button" aria-label="设置" data-app-icon-id="settings">
           <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="m19.2 13.4 1.1.9-1.7 3-1.4-.5a7.7 7.7 0 0 1-1.8 1l-.2 1.5h-3.4l-.2-1.5a7.7 7.7 0 0 1-1.8-1l-1.4.5-1.7-3 1.1-.9a7.5 7.5 0 0 1 0-2.8l-1.1-.9 1.7-3 1.4.5a7.7 7.7 0 0 1 1.8-1l.2-1.5h3.4l.2 1.5a7.7 7.7 0 0 1 1.8 1l1.4-.5 1.7 3-1.1.9a7.5 7.5 0 0 1 0 2.8Z"/></svg></span>
           <span class="app-name">设置</span>
         </button>
-        <button class="app" id="beautifyApp" type="button" aria-label="美化">
+        <button class="app" id="beautifyApp" type="button" aria-label="美化" data-app-icon-id="beautify">
           <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m13.4 3.8.9 4.1 3.9.9-3.9.9-.9 4.1-.9-4.1-3.9-.9 3.9-.9.9-4.1Z"/><path d="m18.4 14.6.5 2.4 2.3.5-2.3.6-.5 2.3-.6-2.3-2.3-.6 2.3-.5.6-2.4Z"/><path d="M5.3 12.7 6 15.5l2.7.7-2.7.7-.7 2.8-.7-2.8-2.7-.7 2.7-.7.7-2.8Z"/></svg></span>
           <span class="app-name">美化</span>
         </button>

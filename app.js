@@ -16,6 +16,16 @@ const applySavedState = savedState => {
       }
       if (state.wallpaper) applyWallpaper(state.wallpaper, state.wallpaperName);
       if (state.globalFont) applyGlobalFont(state.globalFont, state.globalFontName);
+      if (state.desktopIcon) applyDesktopIcon(state.desktopIcon, state.desktopIconName);
+      state.appIcons = state.appIcons || {};
+      state.appIconNames = state.appIconNames || {};
+      if (state.appIcon && !Object.keys(state.appIcons).length) {
+        document.querySelectorAll('[data-app-icon-id]').forEach(app => {
+          state.appIcons[app.dataset.appIconId] = state.appIcon;
+          state.appIconNames[app.dataset.appIconId] = state.appIconName;
+        });
+      }
+      Object.entries(state.appIcons).forEach(([appId, icon]) => applyAppIcon(appId, icon, state.appIconNames[appId]));
       window.initializeChatApp?.();
       window.renderTransmissions?.();
     };
