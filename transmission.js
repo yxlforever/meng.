@@ -46,12 +46,21 @@
   let tarotDraw = [];
   let tarotCards = [];
   let waitingForReply = false;
-  const tarotDeckData = [
+  const majorArcana = [
     ['愚者', '✧'], ['魔术师', '∞'], ['女祭司', '☾'], ['皇后', '♀'], ['皇帝', '♔'], ['教皇', '♜'],
     ['恋人', '♡'], ['战车', '♢'], ['力量', '♌'], ['隐者', '☄'], ['命运之轮', '⊙'], ['正义', '⚖'],
     ['倒吊人', '▽'], ['死神', '♱'], ['节制', '⚗'], ['恶魔', '♑'], ['高塔', 'ϟ'], ['星星', '☆'],
     ['月亮', '☽'], ['太阳', '☼'], ['审判', '♬'], ['世界', '◉']
   ].map(([name, symbol]) => ({ name, symbol }));
+  const minorRanks = ['王牌', '二', '三', '四', '五', '六', '七', '八', '九', '十', '侍从', '骑士', '王后', '国王'];
+  const minorSuits = [
+    ['权杖', '♧'], ['圣杯', '♢'], ['宝剑', '♤'], ['星币', '⊛']
+  ];
+  const minorArcana = minorSuits.flatMap(([suit, symbol]) => minorRanks.map(rank => ({
+    name: `${suit}${rank}`,
+    symbol
+  })));
+  const tarotDeckData = [...majorArcana, ...minorArcana];
 
   const shuffledTarot = () => {
     const cards = [...tarotDeckData];
@@ -203,11 +212,11 @@
       const item = document.createElement('div');
       if (message.tarot || message.reading) {
         item.className = `message message-notice${message.reading ? ' reading-notice' : ''}`;
-        const notice = document.createElement(message.reading ? 'button' : 'div');
-        if (message.reading) notice.type = 'button';
+        const notice = document.createElement('button');
+        notice.type = 'button';
         notice.className = 'message-notice-content';
-        notice.textContent = message.reading ? '解牌说明' : message.text;
-        if (message.reading) notice.addEventListener('click', () => openReading(message.text));
+        notice.textContent = message.reading ? '解牌说明' : '我的抽牌';
+        notice.addEventListener('click', () => openReading(message.text));
         item.append(notice);
         messageArea.append(item);
         return;
@@ -401,9 +410,30 @@
     return segments.length ? segments : [text.trim()];
   };
 
+  const parseTarotReply = rawText => {
+    const cleaned = rawText.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+    try {
+      const parsed = JSON.parse(cleaned);
+      const transmission = String(parsed.transmission || parsed.message || '').trim();
+      const reading = String(parsed.reading || parsed.interpretation || '').trim();
+      if (transmission && reading) return { transmission, reading };
+    } catch {
+      const transmissionMatch = cleaned.match(/<transmission>([\s\S]*?)<\/transmission>/i);
+      const readingMatch = cleaned.match(/<reading>([\s\S]*?)<\/reading>/i);
+      if (transmissionMatch?.[1]?.trim() && readingMatch?.[1]?.trim()) {
+        return { transmission: transmissionMatch[1].trim(), reading: readingMatch[1].trim() };
+      }
+    }
+    return {
+      transmission: '这一次，牌更想先把它的含义安静地留给你。',
+      reading: cleaned
+    };
+  };
+
   const requestTarotReply = async (conversation, tarotMessage) => {
     const apiSettings = window.getDreamApiSettings?.();
     const waitingMessage = { text: '正在倾听牌的回音…', mine: false, waiting: true };
+    let responseText = '';
     conversation.messages.push(waitingMessage);
     waitingForReply = true;
     waitButton.disabled = true;
@@ -417,7 +447,11 @@
         content: message.text
       }));
       const systemPrompt = conversation.systemPrompt?.trim();
-      const tarotInstruction = '用户正在进行一次自由抽牌的塔罗占卜。请结合用户的问题、所抽的全部牌以及正逆位，给出温柔、具体、有层次的解读，不要擅自套用过去、现在、未来等牌阵位置。说明塔罗仅用于自我探索，不作绝对预言。';
+      const tarotInstruction = `用户正在进行一次自由抽牌的塔罗传讯。你是连接用户与梦角的传讯者，请严格区分“梦角传达的话”和“塔罗牌解读”：
+1. transmission 只写梦角借牌传达给用户的话，用梦角的口吻或转述方式，例如“他说……”“他觉得……”“他想让你知道……”。不要在这里逐张解释牌义。
+2. reading 只写所抽全部牌及正逆位的专业解读，可以说明牌面之间的联系与给用户的启发；不要伪装成梦角说话。
+3. 不要擅自套用过去、现在、未来等牌阵位置。塔罗仅用于自我探索，不作绝对预言。
+只返回以下 JSON，不要添加 Markdown 或其他文字：{"transmission":"梦角传达的话","reading":"完整的解牌说明"}`;
       const response = await fetch(`${apiSettings.apiUrl.replace(/\/+$/, '')}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -440,8 +474,6 @@
         const payload = await response.json().catch(() => ({}));
         throw new Error(payload?.error?.message || payload?.message || `API 请求失败 (${response.status})`);
       }
-      waitingMessage.text = '';
-      waitingMessage.waiting = false;
       if (apiSettings.stream) {
         if (!response.body) throw new Error('浏览器未收到流式响应');
         const reader = response.body.getReader();
@@ -455,25 +487,25 @@
           lines.forEach(line => {
             const data = line.startsWith('data:') ? line.slice(5).trim() : '';
             if (!data || data === '[DONE]') return;
-            try { waitingMessage.text += JSON.parse(data).choices?.[0]?.delta?.content || ''; } catch { return; }
+            try { responseText += JSON.parse(data).choices?.[0]?.delta?.content || ''; } catch { return; }
           });
-          renderMessages(conversation);
           if (done) break;
         }
       } else {
         const payload = await response.json();
-        waitingMessage.text = payload.choices?.[0]?.message?.content || '';
+        responseText = payload.choices?.[0]?.message?.content || '';
       }
-      if (!waitingMessage.text.trim()) throw new Error('API 没有返回回复内容');
+      if (!responseText.trim()) throw new Error('API 没有返回回复内容');
+      waitingMessage.waiting = false;
     } catch (error) {
       waitingMessage.text = `暂时没有收到回音：${error.message}`;
       waitingMessage.waiting = false;
     } finally {
-      if (!waitingMessage.waiting && waitingMessage.text.trim() && !waitingMessage.text.startsWith('暂时没有收到回音：')) {
-        const readingText = waitingMessage.text.trim();
+      if (responseText.trim()) {
+        const { transmission, reading } = parseTarotReply(responseText);
         const waitingIndex = conversation.messages.indexOf(waitingMessage);
-        const replyMessages = splitReplyIntoSegments(readingText).map(text => ({ text, mine: false }));
-        conversation.messages.splice(waitingIndex, 1, ...replyMessages, { text: readingText, mine: false, reading: true });
+        const replyMessages = splitReplyIntoSegments(transmission).map(text => ({ text, mine: false }));
+        conversation.messages.splice(waitingIndex, 1, ...replyMessages, { text: reading, mine: false, reading: true });
       }
       waitingForReply = false;
       waitButton.disabled = false;

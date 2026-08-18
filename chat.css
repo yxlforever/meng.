@@ -128,12 +128,12 @@
     .thread-settings-group { border-top: 1px solid #e2e2de; }
     .thread-settings-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 58px; padding: 0 2px; border-bottom: 1px solid #e2e2de; }
     .message-area { display: flex; min-height: 0; flex: 1 1 auto; flex-direction: column; gap: 12px; padding: 25px 6px 18px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
-    .message { display: flex; max-width: 82%; align-items: flex-end; gap: 8px; }
+    .message { display: flex; max-width: 82%; align-items: flex-start; gap: 8px; }
     .message.incoming { align-self: flex-start; }
     .message.outgoing { align-self: flex-end; flex-direction: row-reverse; }
     .message-avatar { display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; overflow: hidden; border-radius: 50%; background: #d1d1ce; color: #8c8c88; }
     .message-avatar svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-    .message-bubble { padding: 10px 13px; border-radius: 15px; background: #fff; color: #333331; font-size: 14px; line-height: 1.5; box-shadow: 0 2px 8px rgba(30,30,28,.05); }
+    .message-bubble { padding: 6px 12px; border-radius: 15px; background: #fff; color: #333331; font-size: 14px; line-height: 22px; box-shadow: 0 2px 8px rgba(30,30,28,.05); }
     .message.outgoing .message-bubble { background: #d8d8d5; }
     .message-form {
       position: relative;
@@ -329,9 +329,10 @@
     .tarot-action:disabled { opacity: .4; cursor: default; }
     .message-bubble.waiting-bubble { color: #8a89a1; font-style: italic; }
     .message.message-notice { align-self: center; display: flex; width: 100%; max-width: 100%; justify-content: center; margin: 5px 0; padding: 0 36px; }
-    .message-notice-content { max-width: min(100%, 520px); padding: 4px 10px; border: 0; background: transparent; color: #898997; font: inherit; font-size: 12px; line-height: 1.65; text-align: center; white-space: pre-wrap; }
-    .reading-notice .message-notice-content { padding: 6px 18px; border: 1px solid rgba(126,126,154,.22); border-radius: 999px; background: rgba(255,255,255,.48); color: #777792; cursor: pointer; }
-    .reading-notice .message-notice-content:hover { background: rgba(255,255,255,.82); }
+    .message-notice-content { max-width: min(100%, 520px); padding: 4px 10px; border: 0; background: transparent; color: #898997; font: inherit; font-size: 12px; line-height: 1.65; text-align: center; white-space: pre-wrap; cursor: pointer; }
+    .message-notice-content:hover { color: #62627f; }
+    .message-notice-content:focus-visible { outline: 2px solid rgba(98,98,127,.35); outline-offset: 3px; border-radius: 4px; }
+    .reading-notice .message-notice-content { padding: 4px 10px; border: 0; border-radius: 0; background: transparent; color: #898997; }
     .tarot-reading-modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(45,46,66,.34); backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: opacity .22s ease; }
     .tarot-reading-modal.open { opacity: 1; pointer-events: auto; }
     .tarot-reading-dialog { position: relative; width: min(100%, 520px); max-height: min(78dvh, 680px); padding: 34px 26px 26px; overflow-y: auto; border: 1px solid rgba(151,151,199,.34); border-radius: 24px; background: linear-gradient(155deg, #fbfbff, #f0f0fa); box-shadow: 0 25px 70px rgba(42,43,70,.24); transform: translateY(12px) scale(.98); transition: transform .22s ease; }
