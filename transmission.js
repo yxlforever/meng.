@@ -19,6 +19,9 @@
   const tarotShuffle = document.getElementById('tarotShuffle');
   const tarotCut = document.getElementById('tarotCut');
   const tarotConfirm = document.getElementById('tarotConfirm');
+  const readingModal = document.getElementById('transmissionReadingModal');
+  const readingContent = document.getElementById('transmissionReadingContent');
+  const readingClose = document.getElementById('transmissionReadingClose');
   const settingsPage = document.getElementById('transmissionSettingsPage');
   const settingsChatNameInput = document.getElementById('transmissionSettingsChatNameInput');
   const settingsUserNameInput = document.getElementById('transmissionSettingsUserNameInput');
@@ -103,7 +106,7 @@
   const resetTarot = () => {
     tarotStep = 'idle';
     tarotDraw = [];
-    tarotCards = shuffledTarot().slice(0, 12);
+    tarotCards = shuffledTarot();
     tarotGuidance.textContent = '先让心安静下来，然后洗牌。';
     tarotDeck.className = 'tarot-deck';
     renderTarotDeck();
@@ -129,30 +132,32 @@
       item.className = 'tarot-picked';
       item.innerHTML = `<span class="tarot-picked-card${card.reversed ? ' reversed' : ''}" data-symbol="${card.symbol}"></span><span class="tarot-picked-name"></span><span class="tarot-picked-position"></span>`;
       item.querySelector('.tarot-picked-name').textContent = card.name;
-      item.querySelector('.tarot-picked-position').textContent = `${['过去', '现在', '未来'][index]} · ${card.reversed ? '逆位' : '正位'}`;
+      item.querySelector('.tarot-picked-position').textContent = `第 ${index + 1} 张 · ${card.reversed ? '逆位' : '正位'}`;
+      item.title = '点击移除这张牌';
+      item.addEventListener('click', () => {
+        tarotDraw.splice(index, 1);
+        renderTarotSelection();
+      });
       tarotSelection.append(item);
     });
-    tarotConfirm.disabled = tarotDraw.length !== 3;
-    tarotGuidance.textContent = tarotDraw.length < 3 ? `凭直觉再选择 ${3 - tarotDraw.length} 张牌。` : '三张牌已经回应你，可以发送给 AI 解读了。';
+    tarotConfirm.disabled = tarotDraw.length === 0;
+    tarotGuidance.textContent = tarotDraw.length
+      ? `已抽 ${tarotDraw.length} 张。可以继续抽，或直接确定；点击已抽的牌可以移除。`
+      : '凭直觉抽牌，张数不限。牌列可以左右滑动。';
   };
   const showTarotFan = () => {
     tarotDeck.hidden = true;
     tarotCardFan.replaceChildren();
     tarotCards.forEach((card, index) => {
       const button = document.createElement('button');
-      const angle = (index - (tarotCards.length - 1) / 2) * 8;
-      const x = (index - (tarotCards.length - 1) / 2) * 23;
       button.type = 'button';
       button.className = 'tarot-choice';
       button.setAttribute('aria-label', `选择第 ${index + 1} 张牌`);
-      button.style.setProperty('--card-transform', `translateX(${x}px) rotate(${angle}deg)`);
-      button.style.transform = `translateX(${x}px) rotate(${angle}deg)`;
       button.addEventListener('click', () => {
-        if (tarotDraw.length >= 3) return;
         button.classList.add('selected');
+        button.disabled = true;
         tarotDraw.push({ ...card, reversed: Math.random() < .35 });
         renderTarotSelection();
-        if (tarotDraw.length === 3) tarotCardFan.querySelectorAll('button:not(.selected)').forEach(item => { item.disabled = true; });
       });
       tarotCardFan.append(button);
     });
@@ -181,10 +186,32 @@
     });
   };
 
+  const openReading = text => {
+    readingContent.textContent = text;
+    readingModal.classList.add('open');
+    readingModal.setAttribute('aria-hidden', 'false');
+  };
+
+  const closeReading = () => {
+    readingModal.classList.remove('open');
+    readingModal.setAttribute('aria-hidden', 'true');
+  };
+
   const renderMessages = conversation => {
     messageArea.replaceChildren();
     (conversation.messages || []).forEach(message => {
       const item = document.createElement('div');
+      if (message.tarot || message.reading) {
+        item.className = `message message-notice${message.reading ? ' reading-notice' : ''}`;
+        const notice = document.createElement(message.reading ? 'button' : 'div');
+        if (message.reading) notice.type = 'button';
+        notice.className = 'message-notice-content';
+        notice.textContent = message.reading ? '解牌说明' : message.text;
+        if (message.reading) notice.addEventListener('click', () => openReading(message.text));
+        item.append(notice);
+        messageArea.append(item);
+        return;
+      }
       item.className = `message ${message.mine ? 'outgoing' : 'incoming'}`;
       const messageAvatar = message.mine ? conversation.userAvatar : conversation.chatAvatar;
       item.innerHTML = `<span class="message-avatar">${avatarMarkup(messageAvatar)}</span><span class="message-bubble"></span>`;
@@ -198,7 +225,6 @@
         bubble.append(image);
       } else {
         bubble.textContent = message.text;
-        if (message.tarot) bubble.classList.add('tarot-bubble');
         if (message.waiting) bubble.classList.add('waiting-bubble');
       }
       messageArea.append(item);
@@ -240,6 +266,7 @@
 
   const closeThread = () => {
     closePromptModal();
+    closeReading();
     closeSettings();
     document.body.classList.remove('show-transmission-thread');
     threadPage.classList.remove('active');
@@ -356,6 +383,24 @@
     saveState();
     closeModal();
   });
+  const splitReplyIntoSegments = text => {
+    const paragraphs = text.split(/\n\s*\n+/).map(part => part.trim()).filter(Boolean);
+    const segments = [];
+    paragraphs.forEach(paragraph => {
+      const sentences = paragraph.match(/[^。！？!?；;\n]+[。！？!?；;]?/g) || [paragraph];
+      let current = '';
+      sentences.forEach(sentence => {
+        if (current && current.length + sentence.length > 110) {
+          segments.push(current.trim());
+          current = '';
+        }
+        current += sentence;
+      });
+      if (current.trim()) segments.push(current.trim());
+    });
+    return segments.length ? segments : [text.trim()];
+  };
+
   const requestTarotReply = async (conversation, tarotMessage) => {
     const apiSettings = window.getDreamApiSettings?.();
     const waitingMessage = { text: '正在倾听牌的回音…', mine: false, waiting: true };
@@ -373,7 +418,7 @@
       }));
       const systemContent = [
         conversation.systemPrompt,
-        '用户正在进行一次塔罗牌占卜。请结合用户的问题、三张牌的位置以及正逆位，给出温柔、具体、有层次的解读。说明塔罗仅用于自我探索，不作绝对预言。'
+        '用户正在进行一次自由抽牌的塔罗占卜。请结合用户的问题、所抽的全部牌以及正逆位，给出温柔、具体、有层次的解读，不要擅自套用过去、现在、未来等牌阵位置。说明塔罗仅用于自我探索，不作绝对预言。'
       ].filter(Boolean).join('\n\n');
       const response = await fetch(`${apiSettings.apiUrl.replace(/\/+$/, '')}/chat/completions`, {
         method: 'POST',
@@ -422,6 +467,12 @@
       waitingMessage.text = `暂时没有收到回音：${error.message}`;
       waitingMessage.waiting = false;
     } finally {
+      if (!waitingMessage.waiting && waitingMessage.text.trim() && !waitingMessage.text.startsWith('暂时没有收到回音：')) {
+        const readingText = waitingMessage.text.trim();
+        const waitingIndex = conversation.messages.indexOf(waitingMessage);
+        const replyMessages = splitReplyIntoSegments(readingText).map(text => ({ text, mine: false }));
+        conversation.messages.splice(waitingIndex, 1, ...replyMessages, { text: readingText, mine: false, reading: true });
+      }
       waitingForReply = false;
       waitButton.disabled = false;
       waitButton.classList.remove('waiting');
@@ -438,10 +489,12 @@
   });
   document.getElementById('tarotClose').addEventListener('click', closeTarot);
   tarotModal.addEventListener('click', event => { if (event.target === tarotModal) closeTarot(); });
+  readingClose.addEventListener('click', closeReading);
+  readingModal.addEventListener('click', event => { if (event.target === readingModal) closeReading(); });
   tarotShuffle.addEventListener('click', () => {
     if (tarotStep !== 'idle') return;
     tarotStep = 'shuffled';
-    tarotCards = shuffledTarot().slice(0, 12);
+    tarotCards = shuffledTarot();
     tarotDeck.classList.add('shuffling');
     tarotShuffle.disabled = true;
     tarotGuidance.textContent = '牌被分开、交错、收拢……再来一轮。';
@@ -466,17 +519,16 @@
     tarotCut.disabled = true;
     tarotGuidance.textContent = '三叠牌已经分开，正在依照直觉重新合起。';
     window.setTimeout(() => {
-      tarotGuidance.textContent = '切牌完成。请依次选择过去、现在与未来。';
+      tarotGuidance.textContent = '切牌完成。凭直觉自由抽牌，张数不限，牌列可左右滑动。';
       showTarotFan();
     }, 2250);
   });
   tarotConfirm.addEventListener('click', () => {
     const conversation = activeConversation();
-    if (!conversation || tarotDraw.length !== 3) return;
+    if (!conversation || tarotDraw.length === 0) return;
     const question = messageInput.value.trim();
-    const positions = ['过去', '现在', '未来'];
-    const cardsText = tarotDraw.map((card, index) => `${positions[index]}：${card.name}（${card.reversed ? '逆位' : '正位'}）`).join('\n');
-    const tarotMessage = `${question ? `我的问题：${question}\n` : ''}我的塔罗牌阵：\n${cardsText}\n请结合这个三张牌阵为我解读。`;
+    const cardsText = tarotDraw.map((card, index) => `第 ${index + 1} 张：${card.name}（${card.reversed ? '逆位' : '正位'}）`).join('\n');
+    const tarotMessage = `${question ? `问题：${question}\n` : ''}抽到的牌：\n${cardsText}`;
     conversation.messages = conversation.messages || [];
     conversation.messages.push({ text: tarotMessage, mine: true, tarot: true, tarotCards: tarotDraw });
     messageInput.value = '';

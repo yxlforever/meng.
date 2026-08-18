@@ -74,71 +74,6 @@ document.getElementById('chatApp').addEventListener('click', () => {
     };
     const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
     const getImportedEmojis = () => (state.emojiCategories || []).flatMap(category => category.items || []).filter(item => item?.url);
-    const requestApiReply = async conversation => {
-      const apiSettings = window.getDreamApiSettings?.();
-      if (!apiSettings?.apiUrl || !apiSettings?.apiKey || !apiSettings?.model) return false;
-      const reply = { text: '', mine: false };
-      conversation.messages.push(reply);
-      renderMessages(conversation);
-      const endpoint = `${apiSettings.apiUrl.replace(/\/+$/, '')}/chat/completions`;
-      const messages = conversation.messages.slice(0, -1).filter(message => !message.imageUrl && message.text).slice(-30).map(message => ({
-        role: message.mine ? 'user' : 'assistant',
-        content: message.text
-      }));
-      try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${apiSettings.apiKey}`,
-            'Content-Type': 'application/json',
-            Accept: apiSettings.stream ? 'text/event-stream' : 'application/json'
-          },
-          body: JSON.stringify({
-            model: apiSettings.model,
-            messages,
-            temperature: Number(apiSettings.temperature ?? 0.7),
-            stream: Boolean(apiSettings.stream)
-          })
-        });
-        if (!response.ok) {
-          const payload = await response.json().catch(() => ({}));
-          throw new Error(payload?.error?.message || payload?.message || `API 请求失败 (${response.status})`);
-        }
-        if (apiSettings.stream) {
-          if (!response.body) throw new Error('浏览器未收到流式响应');
-          const reader = response.body.getReader();
-          const decoder = new TextDecoder();
-          let buffer = '';
-          while (true) {
-            const { value, done } = await reader.read();
-            buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
-            const lines = buffer.split(/\r?\n/);
-            buffer = lines.pop() || '';
-            lines.forEach(line => {
-              const data = line.startsWith('data:') ? line.slice(5).trim() : '';
-              if (!data || data === '[DONE]') return;
-              try {
-                const chunk = JSON.parse(data);
-                reply.text += chunk.choices?.[0]?.delta?.content || '';
-              } catch {
-                return;
-              }
-            });
-            renderMessages(conversation);
-            if (done) break;
-          }
-        } else {
-          const payload = await response.json();
-          reply.text = payload.choices?.[0]?.message?.content || '';
-        }
-        if (!reply.text.trim()) throw new Error('API 没有返回回复内容');
-      } catch (error) {
-        reply.text = `连接失败：${error.message}`;
-      }
-      renderMessages(conversation);
-      saveState();
-      return true;
-    };
     const scheduleAutoReplies = conversation => {
       const cards = (conversation.replyCards || []).filter(Boolean);
       if (!cards.length) return;
@@ -571,16 +506,14 @@ document.getElementById('chatApp').addEventListener('click', () => {
       renderMessages(conversation);
       saveState();
       closeEmojiPanel();
-      requestApiReply(conversation).then(requested => {
-        if (!requested && conversation.autoReply !== false) scheduleAutoReplies(conversation);
-      });
+      if (conversation.autoReply !== false) scheduleAutoReplies(conversation);
     });
     const closeNoteModal = () => {
       noteModal.classList.remove('open');
       noteModal.setAttribute('aria-hidden', 'true');
       noteNameInput.value = '';
     };
-    document.querySelector('.notes-heart').addEventListener('click', () => {
+    document.getElementById('chatAdd').addEventListener('click', () => {
       noteModal.classList.add('open');
       noteModal.setAttribute('aria-hidden', 'false');
       noteNameInput.focus();

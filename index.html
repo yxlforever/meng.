@@ -182,14 +182,22 @@
       <p class="tarot-guidance" id="tarotGuidance">先让心安静下来，然后洗牌。</p>
       <div class="tarot-deck-stage" id="tarotDeckStage" aria-live="polite">
         <div class="tarot-deck" id="tarotDeck" aria-hidden="true"></div>
-        <div class="tarot-card-fan" id="tarotCardFan" aria-label="选择三张塔罗牌"></div>
+        <div class="tarot-card-fan" id="tarotCardFan" aria-label="选择塔罗牌，可左右滑动"></div>
       </div>
-      <div class="tarot-selection" id="tarotSelection" aria-label="已选择的牌"></div>
+      <div class="tarot-selection" id="tarotSelection" aria-label="已选择的牌，可左右滑动"></div>
       <div class="tarot-actions">
         <button class="tarot-action primary" id="tarotShuffle" type="button">洗牌</button>
         <button class="tarot-action" id="tarotCut" type="button" disabled>切牌</button>
         <button class="tarot-action confirm" id="tarotConfirm" type="button" disabled>确定并等待回复</button>
       </div>
+    </section>
+  </div>
+  <div class="tarot-reading-modal" id="transmissionReadingModal" role="dialog" aria-modal="true" aria-labelledby="transmissionReadingTitle" aria-hidden="true">
+    <section class="tarot-reading-dialog">
+      <button class="tarot-close" id="transmissionReadingClose" type="button" aria-label="关闭解牌说明">×</button>
+      <p class="tarot-eyebrow">CARD READING</p>
+      <h2 class="tarot-reading-title" id="transmissionReadingTitle">解牌说明</h2>
+      <div class="tarot-reading-content" id="transmissionReadingContent"></div>
     </section>
   </div>
   <main class="thread-settings-page" id="transmissionSettingsPage" aria-label="传讯聊天设置页面">
@@ -240,7 +248,7 @@
     <section class="notes-card" aria-label="Notes">
       <div class="notes-head">
         <h2 class="notes-title">Notes</h2>
-        <button class="notes-heart" type="button" aria-label="添加备注">
+        <button class="notes-heart" id="chatAdd" type="button" aria-label="添加备注">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.7c0 5.2-8.8 10.1-8.8 10.1S3.2 13.9 3.2 8.7A4.7 4.7 0 0 1 12 6.2a4.7 4.7 0 0 1 8.8 2.5Z"/></svg>
         </button>
       </div>
