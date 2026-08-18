@@ -49,6 +49,7 @@
       text-rendering: optimizeLegibility;
     }
     button, input, textarea { font: inherit; }
+    body.has-custom-font, body.has-custom-font * { font-family: "UserGlobalFont", ui-sans-serif, system-ui, sans-serif !important; }
 
     .home-shell {
       width: min(100%, 760px);
@@ -201,12 +202,34 @@
       padding: calc(22px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
       background: var(--paper);
     }
-    .settings-page.active { display: block; }
-    .settings-heading { display: flex; align-items: center; gap: 16px; width: 100%; }
+    .settings-page.active, .beautify-page.active { display: block; }
+    .beautify-page {
+      display: none;
+      width: min(100%, 760px);
+      min-height: 100dvh;
+      margin: 0 auto;
+      padding: calc(22px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+      background: var(--paper);
+    }
+    .settings-heading, .beautify-heading { display: flex; align-items: center; gap: 16px; width: 100%; }
     .settings-heading::before,
-    .settings-heading::after { content: ""; height: 1px; flex: 1; background: var(--line); }
-    .settings-title { margin: 0; color: var(--ink); font-family: "Great Vibes", cursive; font-size: 36px; font-weight: 400; line-height: 1; white-space: nowrap; }
-    .settings-card { width: 100%; min-height: 210px; margin-top: 28px; border: 1px solid #e5e5e0; border-radius: 26px; background: rgba(255,255,255,.9); box-shadow: 0 14px 34px rgba(31,31,29,.06); }
+    .settings-heading::after,
+    .beautify-heading::before,
+    .beautify-heading::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+    .settings-title, .beautify-title { margin: 0; color: var(--ink); font-family: "Great Vibes", cursive; font-size: 36px; font-weight: 400; line-height: 1; white-space: nowrap; cursor: pointer; }
+    .settings-title:focus-visible, .beautify-title:focus-visible { outline: 2px solid var(--ink); outline-offset: 5px; border-radius: 6px; }
+    .settings-card, .beautify-card { width: 100%; min-height: 210px; margin-top: 28px; border: 1px solid #e5e5e0; border-radius: 26px; background: rgba(255,255,255,.9); box-shadow: 0 14px 34px rgba(31,31,29,.06); }
+    .beautify-card { min-height: 0; padding: 8px 22px; overflow: hidden; }
+    .beautify-option { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: center; gap: 14px; width: 100%; min-height: 88px; padding: 0; border: 0; border-bottom: 1px solid #e8e8e3; background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
+    .beautify-option:last-of-type { border-bottom: 0; }
+    .beautify-option:hover .beautify-option-icon { background: #e7e7e3; transform: translateY(-1px); }
+    .beautify-option:focus-visible { outline: 2px solid var(--ink); outline-offset: -3px; border-radius: 12px; }
+    .beautify-option-icon { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid #deded9; border-radius: 13px; background: #f2f2ef; color: #575752; transition: background .18s ease, transform .18s ease; }
+    .beautify-option-icon svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.55; stroke-linecap: round; stroke-linejoin: round; }
+    .beautify-option-copy { min-width: 0; }
+    .beautify-option-title { display: block; font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
+    .beautify-option-status { display: block; max-width: 220px; margin-top: 5px; overflow: hidden; color: #999994; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .beautify-option-arrow { color: #aaa9a4; font-size: 23px; font-weight: 300; line-height: 1; }
     .chat-page { display: none; width: min(100%, 760px); min-height: 100dvh; margin: 0 auto; padding: calc(22px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); background: var(--paper); }
     .chat-page.active { display: block; }
     .chat-heading { display: flex; align-items: center; gap: 16px; width: 100%; }
@@ -243,6 +266,17 @@
     .note-dialog-button.primary { border-color: #777772; background: #777772; color: #fff; }
     .note-dialog-button:hover { background: #dededb; }
     .note-dialog-button.primary:hover { background: #5f5f5b; }
+    .beautify-dialog { width: min(100%, 360px); }
+    .beautify-dialog-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
+    .beautify-dialog-tab { padding: 8px 10px; border: 1px solid #d7d7d2; border-radius: 8px; background: #f4f4f2; color: #777772; font-size: 12px; cursor: pointer; }
+    .beautify-dialog-tab.active { border-color: #777772; background: #777772; color: #fff; }
+    .beautify-dialog-pane[hidden] { display: none; }
+    .beautify-file-button { width: 100%; min-height: 42px; padding: 9px 14px; border: 1px dashed #c9c9c4; border-radius: 9px; background: #f5f5f3; color: #696964; font-size: 12px; cursor: pointer; }
+    .beautify-file-button:hover { background: #ecece9; }
+    .beautify-preview { display: grid; min-height: 88px; margin-top: 18px; padding: 12px; place-items: center; overflow: hidden; border: 1px solid #e3e3de; border-radius: 12px; background: #f7f7f5; color: #8a8a85; font-size: 12px; text-align: center; }
+    .beautify-preview.wallpaper { background-position: center; background-size: cover; }
+    .beautify-preview.font { color: #30302e; font-size: 21px; line-height: 1.4; }
+    .beautify-dialog-error { min-height: 17px; margin: 8px 0 0; color: #a06464; font-size: 11px; text-align: center; }
     .thread-page { display: none; width: min(100%, 760px); height: 100dvh; min-height: 100dvh; margin: 0 auto; padding: 0; overflow: hidden; background: #f2f2f0; }
     .thread-page.active { position: fixed; inset: 0; display: flex; flex-direction: column; width: min(100%, 760px); height: 100dvh; min-height: 0; overflow: hidden; }
     .thread-heading { position: relative; z-index: 2; display: flex; flex: 0 0 auto; align-items: center; justify-content: center; min-height: calc(56px + env(safe-area-inset-top)); padding: env(safe-area-inset-top) max(48px, calc(48px + env(safe-area-inset-right))) 0 max(48px, calc(48px + env(safe-area-inset-left))); border-bottom: 1px solid rgba(210,210,207,.7); background: rgba(247,247,245,.78); box-shadow: 0 3px 15px rgba(40,40,38,.06); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
@@ -287,6 +321,16 @@
     .thread-settings-divider span { width: 5px; height: 5px; flex: 0 0 5px; border-radius: 50%; background: #bdbdb8; }
     .thread-settings-library { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 58px; padding: 0 2px; border: 0; border-bottom: 1px solid #e2e2de; background: transparent; color: #4e4e4a; font-size: 14px; font-weight: 650; text-align: left; cursor: pointer; }
     .thread-settings-library::after { content: '›'; color: #aaa9a4; font-size: 22px; font-weight: 400; }
+    .thread-wallpaper-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 64px; padding: 0 2px; border-bottom: 1px solid #e2e2de; }
+    .thread-wallpaper-copy { min-width: 0; }
+    .thread-wallpaper-title { display: block; color: #4e4e4a; font-size: 14px; font-weight: 650; }
+    .thread-wallpaper-status { display: block; max-width: 180px; margin-top: 4px; overflow: hidden; color: #a0a09b; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .thread-wallpaper-actions { display: flex; flex: 0 0 auto; gap: 7px; }
+    .thread-wallpaper-button { min-width: 54px; padding: 7px 10px; border: 1px solid #d4d4cf; border-radius: 8px; background: #f2f2ef; color: #696964; font-size: 11px; cursor: pointer; }
+    .thread-wallpaper-button:hover { background: #e7e7e3; }
+    .thread-wallpaper-button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+    .thread-wallpaper-button.undo:disabled { opacity: .42; cursor: default; }
+    .thread-wallpaper-button.undo:disabled:hover { background: #f2f2ef; }
     .card-library-modal { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 24px; background: rgba(28,28,27,.32); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
     .card-library-modal.open { opacity: 1; pointer-events: auto; }
     .card-library-dialog { width: min(100%, 520px); max-height: min(78dvh, 620px); padding: 24px 22px 18px; overflow: hidden; border: 1px solid #e4e4df; border-radius: 20px; background: #fff; box-shadow: 0 20px 52px rgba(21,21,19,.18); }
@@ -413,7 +457,7 @@
       stroke-linecap: round;
       stroke-linejoin: round;
     }
-    body.show-settings .home-shell, body.show-chat .home-shell, body.show-thread .home-shell, body.show-thread #chatPage, body.show-thread-settings .home-shell, body.show-thread-settings #chatPage, body.show-thread-settings #threadPage { display: none; }
+    body.show-settings .home-shell, body.show-beautify .home-shell, body.show-chat .home-shell, body.show-thread .home-shell, body.show-thread #chatPage, body.show-thread-settings .home-shell, body.show-thread-settings #chatPage, body.show-thread-settings #threadPage { display: none; }
 
     @media (min-width: 600px) {
       .notes-card { width: calc(100% + 84px); margin-right: -42px; margin-left: -42px; padding-right: 42px; padding-left: 42px; }
@@ -456,10 +500,51 @@
 <body>
   <main class="settings-page" id="settingsPage" aria-label="设置页面">
     <header class="settings-heading">
-      <h1 class="settings-title">my love</h1>
+      <h1 class="settings-title" id="settingsBack" role="button" tabindex="0" aria-label="返回桌面">my love</h1>
     </header>
     <section class="settings-card" aria-label="设置内容"></section>
   </main>
+  <main class="beautify-page" id="beautifyPage" aria-label="美化页面">
+    <header class="beautify-heading">
+      <h1 class="beautify-title" id="beautifyBack" role="button" tabindex="0" aria-label="返回桌面">Beautify</h1>
+    </header>
+    <section class="beautify-card" aria-label="美化内容">
+      <button class="beautify-option" id="wallpaperOption" type="button">
+        <span class="beautify-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="9.5" r="1.5"/><path d="m5.5 17 4.2-4.2a1.4 1.4 0 0 1 2 0l1.1 1.1 1.7-1.7a1.4 1.4 0 0 1 2 0l2 2"/></svg></span>
+        <span class="beautify-option-copy"><span class="beautify-option-title">替换桌面壁纸</span><span class="beautify-option-status" id="wallpaperStatus">选择一张喜欢的图片</span></span>
+        <span class="beautify-option-arrow" aria-hidden="true">›</span>
+      </button>
+      <button class="beautify-option" id="fontOption" type="button">
+        <span class="beautify-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6.5h14M12 6.5v12M8.5 18.5h7"/></svg></span>
+        <span class="beautify-option-copy"><span class="beautify-option-title">替换全局字体</span><span class="beautify-option-status" id="fontStatus">使用系统默认字体</span></span>
+        <span class="beautify-option-arrow" aria-hidden="true">›</span>
+      </button>
+      <input id="wallpaperInput" type="file" accept="image/*" hidden />
+      <input id="fontInput" type="file" accept=".ttf,.otf,.woff,.woff2,font/ttf,font/otf,font/woff,font/woff2" hidden />
+    </section>
+  </main>
+  <div class="note-modal" id="beautifyModal" role="dialog" aria-modal="true" aria-labelledby="beautifyDialogTitle" aria-hidden="true">
+    <form class="note-dialog beautify-dialog" id="beautifyForm">
+      <h2 class="note-dialog-title" id="beautifyDialogTitle">替换桌面壁纸</h2>
+      <p class="note-dialog-copy" id="beautifyDialogCopy">选择本地图片，或粘贴在线图片 URL。</p>
+      <div class="beautify-dialog-tabs">
+        <button class="beautify-dialog-tab active" id="beautifyLocalTab" type="button">本地文件</button>
+        <button class="beautify-dialog-tab" id="beautifyUrlTab" type="button">URL</button>
+      </div>
+      <div class="beautify-dialog-pane" id="beautifyLocalPane">
+        <button class="beautify-file-button" id="beautifyChooseFile" type="button">选择本地图片</button>
+      </div>
+      <div class="beautify-dialog-pane" id="beautifyUrlPane" hidden>
+        <input class="note-name-input" id="beautifyUrlInput" type="url" placeholder="粘贴 URL" autocomplete="off" />
+      </div>
+      <div class="beautify-preview wallpaper" id="beautifyPreview">预览</div>
+      <p class="beautify-dialog-error" id="beautifyDialogError" aria-live="polite"></p>
+      <div class="note-dialog-actions">
+        <button class="note-dialog-button" id="beautifyCancel" type="button">取消</button>
+        <button class="note-dialog-button primary" type="submit">确认</button>
+      </div>
+    </form>
+  </div>
   <main class="chat-page" id="chatPage" aria-label="聊天页面">
     <header class="chat-heading">
       <h1 class="chat-title" id="chatBack" role="button" tabindex="0" aria-label="返回主页">my love</h1>
@@ -563,6 +648,18 @@
       </div>
       <div class="thread-settings-divider" aria-hidden="true" style="margin-top: 24px;"><span></span></div>
       <button class="thread-settings-library" id="openCardLibrary" type="button">字卡库</button>
+      <div class="thread-settings-divider" aria-hidden="true" style="margin-top: 24px;"><span></span></div>
+      <div class="thread-wallpaper-row">
+        <span class="thread-wallpaper-copy">
+          <span class="thread-wallpaper-title">聊天壁纸</span>
+          <span class="thread-wallpaper-status" id="threadWallpaperStatus">默认背景</span>
+        </span>
+        <span class="thread-wallpaper-actions">
+          <button class="thread-wallpaper-button" id="changeThreadWallpaper" type="button">更换</button>
+          <button class="thread-wallpaper-button undo" id="removeThreadWallpaper" type="button" disabled>撤销</button>
+        </span>
+      </div>
+      <input id="threadWallpaperInput" type="file" accept="image/*" hidden />
     </section>
   </main>
   <div class="card-library-modal" id="cardLibraryModal" aria-hidden="true">
@@ -643,7 +740,7 @@
           <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="m19.2 13.4 1.1.9-1.7 3-1.4-.5a7.7 7.7 0 0 1-1.8 1l-.2 1.5h-3.4l-.2-1.5a7.7 7.7 0 0 1-1.8-1l-1.4.5-1.7-3 1.1-.9a7.5 7.5 0 0 1 0-2.8l-1.1-.9 1.7-3 1.4.5a7.7 7.7 0 0 1 1.8-1l.2-1.5h3.4l.2 1.5a7.7 7.7 0 0 1 1.8 1l1.4-.5 1.7 3-1.1.9a7.5 7.5 0 0 1 0 2.8Z"/></svg></span>
           <span class="app-name">设置</span>
         </button>
-        <button class="app" data-panel="beautifyPanel" type="button">
+        <button class="app" id="beautifyApp" type="button" aria-label="美化">
           <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m13.4 3.8.9 4.1 3.9.9-3.9.9-.9 4.1-.9-4.1-3.9-.9 3.9-.9.9-4.1Z"/><path d="m18.4 14.6.5 2.4 2.3.5-2.3.6-.5 2.3-.6-2.3-2.3-.6 2.3-.5.6-2.4Z"/><path d="M5.3 12.7 6 15.5l2.7.7-2.7.7-.7 2.8-.7-2.8-2.7-.7 2.7-.7.7-2.8Z"/></svg></span>
           <span class="app-name">美化</span>
         </button>
@@ -675,6 +772,10 @@
       activeDay: '1',
       toggles: {},
       avatar: null,
+      wallpaper: null,
+      wallpaperName: '',
+      globalFont: null,
+      globalFontName: '',
       conversations: []
     };
     const state = { ...defaultState };
@@ -715,9 +816,193 @@
 
     document.querySelectorAll('[data-panel]').forEach(button => button.addEventListener('click', () => openPanel(button.dataset.panel)));
 
+    const settingsPage = document.getElementById('settingsPage');
+    const returnFromSettings = () => {
+      document.body.classList.remove('show-settings');
+      settingsPage.classList.remove('active');
+    };
     document.getElementById('settingsApp').addEventListener('click', () => {
       document.body.classList.add('show-settings');
-      document.getElementById('settingsPage').classList.add('active');
+      settingsPage.classList.add('active');
+    });
+    const settingsBack = document.getElementById('settingsBack');
+    settingsBack.addEventListener('click', returnFromSettings);
+    const beautifyPage = document.getElementById('beautifyPage');
+    const returnFromBeautify = () => {
+      document.body.classList.remove('show-beautify');
+      beautifyPage.classList.remove('active');
+    };
+    document.getElementById('beautifyApp').addEventListener('click', () => {
+      document.body.classList.add('show-beautify');
+      beautifyPage.classList.add('active');
+    });
+    const beautifyBack = document.getElementById('beautifyBack');
+    beautifyBack.addEventListener('click', returnFromBeautify);
+    beautifyBack.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        returnFromBeautify();
+      }
+    });
+    const wallpaperInput = document.getElementById('wallpaperInput');
+    const fontInput = document.getElementById('fontInput');
+    const wallpaperStatus = document.getElementById('wallpaperStatus');
+    const fontStatus = document.getElementById('fontStatus');
+    const beautifyModal = document.getElementById('beautifyModal');
+    const beautifyForm = document.getElementById('beautifyForm');
+    const beautifyDialogTitle = document.getElementById('beautifyDialogTitle');
+    const beautifyDialogCopy = document.getElementById('beautifyDialogCopy');
+    const beautifyLocalTab = document.getElementById('beautifyLocalTab');
+    const beautifyUrlTab = document.getElementById('beautifyUrlTab');
+    const beautifyLocalPane = document.getElementById('beautifyLocalPane');
+    const beautifyUrlPane = document.getElementById('beautifyUrlPane');
+    const beautifyChooseFile = document.getElementById('beautifyChooseFile');
+    const beautifyUrlInput = document.getElementById('beautifyUrlInput');
+    const beautifyPreview = document.getElementById('beautifyPreview');
+    const beautifyDialogError = document.getElementById('beautifyDialogError');
+    let wallpaperUrl = '';
+    let fontUrl = '';
+    let beautifyMode = 'wallpaper';
+    let beautifySourceType = 'local';
+    let beautifyDraft = null;
+    let beautifyDraftName = '';
+    let beautifyPreviewUrl = '';
+    const sourceUrl = (source, previousUrl = '') => {
+      if (previousUrl && previousUrl.startsWith('blob:')) URL.revokeObjectURL(previousUrl);
+      return typeof source === 'string' ? source : source ? URL.createObjectURL(source) : '';
+    };
+    const applyWallpaper = (wallpaper, name = '') => {
+      wallpaperUrl = sourceUrl(wallpaper, wallpaperUrl);
+      document.body.style.backgroundImage = wallpaperUrl ? `url("${wallpaperUrl}")` : '';
+      document.body.style.backgroundSize = wallpaperUrl ? 'cover' : '';
+      document.body.style.backgroundPosition = wallpaperUrl ? 'center' : '';
+      document.body.style.backgroundAttachment = wallpaperUrl ? 'fixed' : '';
+      document.querySelector('.home-shell').style.background = wallpaperUrl ? 'transparent' : '';
+      wallpaperStatus.textContent = name || '选择一张喜欢的图片';
+    };
+    const applyGlobalFont = (font, name = '') => {
+      fontUrl = sourceUrl(font, fontUrl);
+      document.getElementById('userGlobalFontFace')?.remove();
+      if (fontUrl) {
+        const fontFaceStyle = document.createElement('style');
+        fontFaceStyle.id = 'userGlobalFontFace';
+        fontFaceStyle.textContent = `@font-face { font-family: "UserGlobalFont"; src: url("${fontUrl}"); font-display: swap; }`;
+        document.head.append(fontFaceStyle);
+      }
+      document.body.classList.toggle('has-custom-font', Boolean(fontUrl));
+      fontStatus.textContent = name || '使用系统默认字体';
+    };
+    const clearBeautifyPreviewUrl = () => {
+      if (beautifyPreviewUrl.startsWith('blob:')) URL.revokeObjectURL(beautifyPreviewUrl);
+      beautifyPreviewUrl = '';
+      document.getElementById('beautifyPreviewFontFace')?.remove();
+    };
+    const renderBeautifyPreview = () => {
+      clearBeautifyPreviewUrl();
+      const source = beautifySourceType === 'url' ? beautifyUrlInput.value.trim() : beautifyDraft;
+      if (!source) {
+        beautifyPreview.removeAttribute('style');
+        beautifyPreview.textContent = beautifyMode === 'wallpaper' ? '图片预览' : '字体预览 Aa 字体预览';
+        return;
+      }
+      beautifyPreviewUrl = typeof source === 'string' ? source : URL.createObjectURL(source);
+      if (beautifyMode === 'wallpaper') {
+        beautifyPreview.style.cssText = `background-image:url("${beautifyPreviewUrl}");background-position:center;background-size:cover;`;
+        beautifyPreview.textContent = '';
+      } else {
+        const previewStyle = document.createElement('style');
+        previewStyle.id = 'beautifyPreviewFontFace';
+        previewStyle.textContent = `@font-face { font-family: "BeautifyPreviewFont"; src: url("${beautifyPreviewUrl}"); }`;
+        document.head.append(previewStyle);
+        beautifyPreview.style.cssText = 'font-family:"BeautifyPreviewFont",sans-serif;';
+        beautifyPreview.textContent = 'Aa 字体预览 你好，世界';
+      }
+    };
+    const setBeautifySourceType = type => {
+      beautifySourceType = type;
+      beautifyLocalTab.classList.toggle('active', type === 'local');
+      beautifyUrlTab.classList.toggle('active', type === 'url');
+      beautifyLocalPane.hidden = type !== 'local';
+      beautifyUrlPane.hidden = type !== 'url';
+      beautifyDialogError.textContent = '';
+      renderBeautifyPreview();
+      if (type === 'url') beautifyUrlInput.focus();
+    };
+    const openBeautifyDialog = mode => {
+      beautifyMode = mode;
+      beautifyDraft = null;
+      beautifyDraftName = '';
+      beautifyUrlInput.value = '';
+      beautifyDialogError.textContent = '';
+      beautifyDialogTitle.textContent = mode === 'wallpaper' ? '替换桌面壁纸' : '替换全局字体';
+      beautifyDialogCopy.textContent = mode === 'wallpaper' ? '选择本地图片，或粘贴在线图片 URL。' : '选择本地字体，或粘贴字体文件 URL。';
+      beautifyChooseFile.textContent = mode === 'wallpaper' ? '选择本地图片' : '选择本地字体';
+      beautifyPreview.className = `beautify-preview ${mode}`;
+      setBeautifySourceType('local');
+      beautifyModal.classList.add('open');
+      beautifyModal.setAttribute('aria-hidden', 'false');
+    };
+    const closeBeautifyDialog = () => {
+      beautifyModal.classList.remove('open');
+      beautifyModal.setAttribute('aria-hidden', 'true');
+      clearBeautifyPreviewUrl();
+      wallpaperInput.value = '';
+      fontInput.value = '';
+    };
+    document.getElementById('wallpaperOption').addEventListener('click', () => openBeautifyDialog('wallpaper'));
+    document.getElementById('fontOption').addEventListener('click', () => openBeautifyDialog('font'));
+    beautifyLocalTab.addEventListener('click', () => setBeautifySourceType('local'));
+    beautifyUrlTab.addEventListener('click', () => setBeautifySourceType('url'));
+    beautifyChooseFile.addEventListener('click', () => (beautifyMode === 'wallpaper' ? wallpaperInput : fontInput).click());
+    beautifyUrlInput.addEventListener('input', renderBeautifyPreview);
+    wallpaperInput.addEventListener('change', event => {
+      const [file] = event.target.files;
+      if (!file) return;
+      beautifyDraft = file;
+      beautifyDraftName = file.name;
+      beautifyChooseFile.textContent = file.name;
+      renderBeautifyPreview();
+    });
+    fontInput.addEventListener('change', event => {
+      const [file] = event.target.files;
+      if (!file) return;
+      beautifyDraft = file;
+      beautifyDraftName = file.name;
+      beautifyChooseFile.textContent = file.name;
+      renderBeautifyPreview();
+    });
+    document.getElementById('beautifyCancel').addEventListener('click', closeBeautifyDialog);
+    beautifyModal.addEventListener('click', event => {
+      if (event.target === beautifyModal) closeBeautifyDialog();
+    });
+    beautifyForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const source = beautifySourceType === 'url' ? beautifyUrlInput.value.trim() : beautifyDraft;
+      if (!source) {
+        beautifyDialogError.textContent = beautifySourceType === 'url' ? '请填写有效的 URL。' : '请先选择一个文件。';
+        return;
+      }
+      if (typeof source === 'string') {
+        try {
+          const parsedUrl = new URL(source);
+          if (!['http:', 'https:', 'data:'].includes(parsedUrl.protocol)) throw new Error();
+        } catch {
+          beautifyDialogError.textContent = '请输入以 http:// 或 https:// 开头的有效 URL。';
+          return;
+        }
+      }
+      const name = beautifySourceType === 'url' ? source : beautifyDraftName;
+      if (beautifyMode === 'wallpaper') {
+        state.wallpaper = source;
+        state.wallpaperName = name;
+        applyWallpaper(source, name);
+      } else {
+        state.globalFont = source;
+        state.globalFontName = name;
+        applyGlobalFont(source, name);
+      }
+      saveState();
+      closeBeautifyDialog();
     });
     document.getElementById('chatApp').addEventListener('click', () => {
       document.body.classList.add('show-chat');
@@ -816,10 +1101,20 @@
       };
       sendReply(0);
     };
+    let threadWallpaperUrl = '';
+    const applyThreadWallpaper = conversation => {
+      if (threadWallpaperUrl) URL.revokeObjectURL(threadWallpaperUrl);
+      threadWallpaperUrl = conversation?.wallpaper ? URL.createObjectURL(conversation.wallpaper) : '';
+      messageArea.style.backgroundImage = threadWallpaperUrl ? `url("${threadWallpaperUrl}")` : '';
+      messageArea.style.backgroundSize = threadWallpaperUrl ? 'cover' : '';
+      messageArea.style.backgroundPosition = threadWallpaperUrl ? 'center' : '';
+      messageArea.style.backgroundAttachment = threadWallpaperUrl ? 'local' : '';
+    };
     const openThread = conversation => {
       state.currentConversationId = conversation.id;
       threadName.textContent = conversation.name;
       threadAvatar.innerHTML = avatarMarkup(conversation.chatAvatar);
+      applyThreadWallpaper(conversation);
       renderMessages(conversation);
       document.body.classList.add('show-thread');
       threadPage.classList.add('active');
@@ -839,6 +1134,14 @@
     const replyMinInput = document.getElementById('replyMinInput');
     const replyMaxInput = document.getElementById('replyMaxInput');
     const emojiProbabilityInput = document.getElementById('emojiProbabilityInput');
+    const threadWallpaperInput = document.getElementById('threadWallpaperInput');
+    const threadWallpaperStatus = document.getElementById('threadWallpaperStatus');
+    const removeThreadWallpaper = document.getElementById('removeThreadWallpaper');
+    const updateThreadWallpaperControls = conversation => {
+      const hasWallpaper = Boolean(conversation?.wallpaper);
+      threadWallpaperStatus.textContent = hasWallpaper ? (conversation.wallpaperName || '已设置聊天壁纸') : '默认背景';
+      removeThreadWallpaper.disabled = !hasWallpaper;
+    };
     const cardLibraryModal = document.getElementById('cardLibraryModal');
     const cardLibraryDialog = document.getElementById('cardLibraryDialog');
     const cardLibraryList = document.getElementById('cardLibraryList');
@@ -880,6 +1183,7 @@
       replyMinInput.value = conversation.replyMin || 3;
       replyMaxInput.value = conversation.replyMax || 10;
       emojiProbabilityInput.value = conversation.emojiProbability ?? 20;
+      updateThreadWallpaperControls(conversation);
       document.body.classList.add('show-thread-settings');
       threadSettingsPage.classList.add('active');
     };
@@ -907,6 +1211,27 @@
       closeThreadSettings();
     });
     document.getElementById('openCardLibrary').addEventListener('click', openCardLibrary);
+    document.getElementById('changeThreadWallpaper').addEventListener('click', () => threadWallpaperInput.click());
+    threadWallpaperInput.addEventListener('change', event => {
+      const [file] = event.target.files;
+      const conversation = state.conversations.find(item => item.id === state.currentConversationId);
+      if (!file || !conversation) return;
+      conversation.wallpaper = file;
+      conversation.wallpaperName = file.name;
+      applyThreadWallpaper(conversation);
+      updateThreadWallpaperControls(conversation);
+      saveState();
+      threadWallpaperInput.value = '';
+    });
+    removeThreadWallpaper.addEventListener('click', () => {
+      const conversation = state.conversations.find(item => item.id === state.currentConversationId);
+      if (!conversation?.wallpaper) return;
+      delete conversation.wallpaper;
+      delete conversation.wallpaperName;
+      applyThreadWallpaper(conversation);
+      updateThreadWallpaperControls(conversation);
+      saveState();
+    });
     cardLibraryModal.addEventListener('click', event => {
       if (event.target === cardLibraryModal) closeCardLibrary();
     });
@@ -1091,6 +1416,8 @@
         avatarImage.src = URL.createObjectURL(state.avatar);
         avatarImage.classList.add('has-image');
       }
+      if (state.wallpaper) applyWallpaper(state.wallpaper, state.wallpaperName);
+      if (state.globalFont) applyGlobalFont(state.globalFont, state.globalFontName);
       renderConversations();
     };
 
