@@ -416,10 +416,8 @@
         role: message.mine ? 'user' : 'assistant',
         content: message.text
       }));
-      const systemContent = [
-        conversation.systemPrompt,
-        '用户正在进行一次自由抽牌的塔罗占卜。请结合用户的问题、所抽的全部牌以及正逆位，给出温柔、具体、有层次的解读，不要擅自套用过去、现在、未来等牌阵位置。说明塔罗仅用于自我探索，不作绝对预言。'
-      ].filter(Boolean).join('\n\n');
+      const systemPrompt = conversation.systemPrompt?.trim();
+      const tarotInstruction = '用户正在进行一次自由抽牌的塔罗占卜。请结合用户的问题、所抽的全部牌以及正逆位，给出温柔、具体、有层次的解读，不要擅自套用过去、现在、未来等牌阵位置。说明塔罗仅用于自我探索，不作绝对预言。';
       const response = await fetch(`${apiSettings.apiUrl.replace(/\/+$/, '')}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -429,7 +427,11 @@
         },
         body: JSON.stringify({
           model: apiSettings.model,
-          messages: [{ role: 'system', content: systemContent }, ...history],
+          messages: [
+            ...(systemPrompt ? [{ role: 'system', content: systemPrompt }] : []),
+            ...history,
+            { role: 'user', content: tarotInstruction }
+          ],
           temperature: Number(apiSettings.temperature ?? .7),
           stream: Boolean(apiSettings.stream)
         })

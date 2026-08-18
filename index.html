@@ -225,16 +225,16 @@
       </div>
       <div class="thread-settings-divider" aria-hidden="true"><span></span></div>
       <button class="thread-settings-library thread-settings-prompt-button" id="openTransmissionPrompt" type="button">
-        <span><strong>内置提示词</strong><small id="transmissionPromptStatus">未设置</small></span>
+        <span><strong>自定义 systemPrompt</strong><small id="transmissionPromptStatus">未设置</small></span>
       </button>
       <input id="transmissionAvatarInput" type="file" accept="image/*" hidden />
     </section>
   </main>
   <div class="note-modal" id="transmissionPromptModal" role="dialog" aria-modal="true" aria-labelledby="transmissionPromptTitle" aria-hidden="true">
     <form class="note-dialog transmission-prompt-dialog" id="transmissionPromptForm">
-      <h2 class="note-dialog-title" id="transmissionPromptTitle">内置提示词</h2>
-      <p class="note-dialog-copy">这段内容会作为系统提示词发送给模型，用来设定 Chat 的身份、语气和行为。</p>
-      <textarea class="transmission-prompt-input" id="transmissionPromptInput" maxlength="5000" placeholder="填写系统的内置提示词" aria-label="系统内置提示词"></textarea>
+      <h2 class="note-dialog-title" id="transmissionPromptTitle">自定义 systemPrompt</h2>
+      <p class="note-dialog-copy">这里填写的内容将作为当前传讯会话唯一的 systemPrompt，用来设定 Chat 的身份、语气和行为。</p>
+      <textarea class="transmission-prompt-input" id="transmissionPromptInput" maxlength="5000" placeholder="填写自定义 systemPrompt" aria-label="自定义 systemPrompt"></textarea>
       <div class="note-dialog-actions">
         <button class="note-dialog-button" id="transmissionPromptCancel" type="button">取消</button>
         <button class="note-dialog-button primary" type="submit">保存</button>
