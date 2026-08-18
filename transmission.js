@@ -152,7 +152,7 @@
     tarotConfirm.disabled = tarotDraw.length === 0;
     tarotGuidance.textContent = tarotDraw.length
       ? `已抽 ${tarotDraw.length} 张。可以继续抽，或直接确定；点击已抽的牌可以移除。`
-      : '凭直觉抽牌，张数不限。牌列可以左右滑动。';
+      : '凭直觉抽牌，张数不限。牌列可以上下滑动。';
   };
   const showTarotFan = () => {
     tarotDeck.hidden = true;
@@ -522,7 +522,7 @@
     tarotCut.disabled = true;
     tarotGuidance.textContent = '三叠牌已经分开，正在依照直觉重新合起。';
     window.setTimeout(() => {
-      tarotGuidance.textContent = '切牌完成。凭直觉自由抽牌，张数不限，牌列可左右滑动。';
+      tarotGuidance.textContent = '切牌完成。凭直觉自由抽牌，张数不限，牌列可上下滑动。';
       showTarotFan();
     }, 2250);
   });
