@@ -165,7 +165,7 @@
       button.addEventListener('click', () => {
         button.classList.add('selected');
         button.disabled = true;
-        tarotDraw.push({ ...card, reversed: Math.random() < .35 });
+        tarotDraw.push({ ...card, reversed: Math.random() < .5 });
         renderTarotSelection();
       });
       tarotCardFan.append(button);
@@ -392,45 +392,7 @@
     saveState();
     closeModal();
   });
-  const splitReplyIntoSegments = text => {
-    const paragraphs = text.split(/\n\s*\n+/).map(part => part.trim()).filter(Boolean);
-    const segments = [];
-    paragraphs.forEach(paragraph => {
-      const sentences = paragraph.match(/[^。！？!?；;\n]+[。！？!?；;]?/g) || [paragraph];
-      let current = '';
-      sentences.forEach(sentence => {
-        if (current && current.length + sentence.length > 110) {
-          segments.push(current.trim());
-          current = '';
-        }
-        current += sentence;
-      });
-      if (current.trim()) segments.push(current.trim());
-    });
-    return segments.length ? segments : [text.trim()];
-  };
-
-  const parseTarotReply = rawText => {
-    const cleaned = rawText.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
-    try {
-      const parsed = JSON.parse(cleaned);
-      const transmission = String(parsed.transmission || parsed.message || '').trim();
-      const reading = String(parsed.reading || parsed.interpretation || '').trim();
-      if (transmission && reading) return { transmission, reading };
-    } catch {
-      const transmissionMatch = cleaned.match(/<transmission>([\s\S]*?)<\/transmission>/i);
-      const readingMatch = cleaned.match(/<reading>([\s\S]*?)<\/reading>/i);
-      if (transmissionMatch?.[1]?.trim() && readingMatch?.[1]?.trim()) {
-        return { transmission: transmissionMatch[1].trim(), reading: readingMatch[1].trim() };
-      }
-    }
-    return {
-      transmission: '这一次，牌更想先把它的含义安静地留给你。',
-      reading: cleaned
-    };
-  };
-
-  const requestTarotReply = async (conversation, tarotMessage) => {
+  const requestTarotReply = async conversation => {
     const apiSettings = window.getDreamApiSettings?.();
     const waitingMessage = { text: '正在倾听牌的回音…', mine: false, waiting: true };
     let responseText = '';
@@ -447,11 +409,6 @@
         content: message.text
       }));
       const systemPrompt = conversation.systemPrompt?.trim();
-      const tarotInstruction = `用户正在进行一次自由抽牌的塔罗传讯。你是连接用户与梦角的传讯者，请严格区分“梦角传达的话”和“塔罗牌解读”：
-1. transmission 只写梦角借牌传达给用户的话，用梦角的口吻或转述方式，例如“他说……”“他觉得……”“他想让你知道……”。不要在这里逐张解释牌义。
-2. reading 只写所抽全部牌及正逆位的专业解读，可以说明牌面之间的联系与给用户的启发；不要伪装成梦角说话。
-3. 不要擅自套用过去、现在、未来等牌阵位置。塔罗仅用于自我探索，不作绝对预言。
-只返回以下 JSON，不要添加 Markdown 或其他文字：{"transmission":"梦角传达的话","reading":"完整的解牌说明"}`;
       const response = await fetch(`${apiSettings.apiUrl.replace(/\/+$/, '')}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -463,8 +420,7 @@
           model: apiSettings.model,
           messages: [
             ...(systemPrompt ? [{ role: 'system', content: systemPrompt }] : []),
-            ...history,
-            { role: 'user', content: tarotInstruction }
+            ...history
           ],
           temperature: Number(apiSettings.temperature ?? .7),
           stream: Boolean(apiSettings.stream)
@@ -502,10 +458,8 @@
       waitingMessage.waiting = false;
     } finally {
       if (responseText.trim()) {
-        const { transmission, reading } = parseTarotReply(responseText);
-        const waitingIndex = conversation.messages.indexOf(waitingMessage);
-        const replyMessages = splitReplyIntoSegments(transmission).map(text => ({ text, mine: false }));
-        conversation.messages.splice(waitingIndex, 1, ...replyMessages, { text: reading, mine: false, reading: true });
+        waitingMessage.text = responseText.trim();
+        waitingMessage.waiting = false;
       }
       waitingForReply = false;
       waitButton.disabled = false;
@@ -514,10 +468,25 @@
       renderMessages(conversation);
       saveState();
     }
-    return tarotMessage;
+  };
+
+  const sendMessage = () => {
+    const conversation = activeConversation();
+    const text = messageInput.value.trim();
+    if (!conversation || !text || waitingForReply) return;
+    conversation.messages = conversation.messages || [];
+    conversation.messages.push({ text, mine: true });
+    messageInput.value = '';
+    renderMessages(conversation);
+    saveState();
+    keepLatestMessageVisible();
   };
 
   messageForm.addEventListener('submit', event => {
+    event.preventDefault();
+    sendMessage();
+  });
+  waitButton.addEventListener('click', event => {
     event.preventDefault();
     openTarot();
   });
@@ -560,16 +529,14 @@
   tarotConfirm.addEventListener('click', () => {
     const conversation = activeConversation();
     if (!conversation || tarotDraw.length === 0) return;
-    const question = messageInput.value.trim();
     const cardsText = tarotDraw.map((card, index) => `第 ${index + 1} 张：${card.name}（${card.reversed ? '逆位' : '正位'}）`).join('\n');
-    const tarotMessage = `${question ? `问题：${question}\n` : ''}抽到的牌：\n${cardsText}`;
+    const tarotMessage = `抽到的牌：\n${cardsText}`;
     conversation.messages = conversation.messages || [];
     conversation.messages.push({ text: tarotMessage, mine: true, tarot: true, tarotCards: tarotDraw });
-    messageInput.value = '';
     closeTarot();
     renderMessages(conversation);
     saveState();
-    requestTarotReply(conversation, tarotMessage);
+    requestTarotReply(conversation);
   });
 
   window.renderTransmissions = renderList;
