@@ -1,0 +1,28 @@
+.settings-page.active, .beautify-page.active { display: block; }
+    .beautify-page {
+      display: none;
+      width: min(100%, 760px);
+      min-height: 100dvh;
+      margin: 0 auto;
+      padding: calc(22px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+      background: var(--paper);
+    }
+    .settings-heading, .beautify-heading { display: flex; align-items: center; gap: 16px; width: 100%; }
+    .settings-heading::before,
+    .settings-heading::after,
+    .beautify-heading::before,
+    .beautify-heading::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+    .settings-title, .beautify-title { margin: 0; color: var(--ink); font-family: "Great Vibes", cursive; font-size: 36px; font-weight: 400; line-height: 1; white-space: nowrap; cursor: pointer; }
+    .settings-title:focus-visible, .beautify-title:focus-visible { outline: 2px solid var(--ink); outline-offset: 5px; border-radius: 6px; }
+    .settings-card, .beautify-card { width: 100%; min-height: 210px; margin-top: 28px; border: 1px solid #e5e5e0; border-radius: 26px; background: rgba(255,255,255,.9); box-shadow: 0 14px 34px rgba(31,31,29,.06); }
+    .beautify-card { min-height: 0; padding: 8px 22px; overflow: hidden; }
+    .beautify-option { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: center; gap: 14px; width: 100%; min-height: 88px; padding: 0; border: 0; border-bottom: 1px solid #e8e8e3; background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
+    .beautify-option:last-of-type { border-bottom: 0; }
+    .beautify-option:hover .beautify-option-icon { background: #e7e7e3; transform: translateY(-1px); }
+    .beautify-option:focus-visible { outline: 2px solid var(--ink); outline-offset: -3px; border-radius: 12px; }
+    .beautify-option-icon { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid #deded9; border-radius: 13px; background: #f2f2ef; color: #575752; transition: background .18s ease, transform .18s ease; }
+    .beautify-option-icon svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.55; stroke-linecap: round; stroke-linejoin: round; }
+    .beautify-option-copy { min-width: 0; }
+    .beautify-option-title { display: block; font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
+    .beautify-option-status { display: block; max-width: 220px; margin-top: 5px; overflow: hidden; color: #999994; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .beautify-option-arrow { color: #aaa9a4; font-size: 23px; font-weight: 300; line-height: 1; }
