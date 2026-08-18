@@ -1262,11 +1262,10 @@
       if (threadWallpaperUrl?.startsWith('blob:')) URL.revokeObjectURL(threadWallpaperUrl);
       const wallpaper = conversation?.wallpaper;
       threadWallpaperUrl = typeof wallpaper === 'string' ? wallpaper : wallpaper ? URL.createObjectURL(wallpaper) : '';
-      messageArea.style.backgroundImage = threadWallpaperUrl ? `url("${threadWallpaperUrl}")` : '';
-      messageArea.style.backgroundSize = threadWallpaperUrl ? '100% auto' : '';
-      messageArea.style.backgroundPosition = threadWallpaperUrl ? 'top center' : '';
-      messageArea.style.backgroundRepeat = threadWallpaperUrl ? 'repeat-y' : '';
-      messageArea.style.backgroundAttachment = threadWallpaperUrl ? 'local' : '';
+      threadPage.style.backgroundImage = threadWallpaperUrl ? `url("${threadWallpaperUrl}")` : '';
+      threadPage.style.backgroundSize = threadWallpaperUrl ? 'cover' : '';
+      threadPage.style.backgroundPosition = threadWallpaperUrl ? 'center' : '';
+      threadPage.style.backgroundRepeat = threadWallpaperUrl ? 'no-repeat' : '';
     };
     const openThread = conversation => {
       state.currentConversationId = conversation.id;
@@ -1772,6 +1771,4 @@
     });
   </script>
 </body>
-</html>
-dy>
 </html>
