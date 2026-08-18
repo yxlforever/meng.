@@ -105,9 +105,14 @@ document.querySelectorAll('.close').forEach(button => button.addEventListener('c
       profileBackgroundModal.classList.remove('open');
       profileBackgroundModal.setAttribute('aria-hidden', 'true');
     };
-    profileBackgroundButton.addEventListener('click', () => {
+    const openProfileBackgroundModal = () => {
       profileBackgroundModal.classList.add('open');
       profileBackgroundModal.setAttribute('aria-hidden', 'false');
+    };
+    profileBackgroundButton.addEventListener('click', openProfileBackgroundModal);
+    profileCard.addEventListener('click', event => {
+      if (event.target.closest('button, [contenteditable="true"]')) return;
+      openProfileBackgroundModal();
     });
     document.getElementById('profileBackgroundChoose').addEventListener('click', () => profileBackgroundInput.click());
     document.getElementById('profileBackgroundCancel').addEventListener('click', closeProfileBackgroundModal);

@@ -73,11 +73,9 @@
     .profile-card.has-background { background-size: cover; background-position: center; border-color: rgba(255,255,255,.45); }
     .profile-card.has-background::before { opacity: 1; background: linear-gradient(110deg, rgba(255,255,255,.46), rgba(255,255,255,.1)); }
     .profile-card.has-background.background-dark::before { background: linear-gradient(110deg, rgba(0,0,0,.42), rgba(0,0,0,.12)); }
-    .profile-background-button { position: absolute; z-index: 3; top: 12px; right: 12px; width: 34px; height: 34px; display: grid; padding: 0; place-items: center; border: 0; border-radius: 50%; background: transparent; color: #777772; opacity: .32; cursor: pointer; transition: opacity .2s ease, background .2s ease; }
-    .profile-background-button:hover, .profile-background-button:focus-visible { opacity: 1; background: rgba(255,255,255,.68); outline: none; }
-    .profile-background-button svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-    .profile-card.has-background .profile-background-button { color: #20201e; background: rgba(255,255,255,.46); opacity: .72; }
-    .profile-card.background-dark .profile-background-button { color: #fff; background: rgba(0,0,0,.24); }
+    .profile-background-button { display: none; }
+    .profile-card { cursor: pointer; }
+    .profile-card button, .profile-card [contenteditable="true"] { cursor: auto; }
     .profile-card.background-dark .profile-name, .profile-card.background-dark .profile-handle, .profile-card.background-dark .bio, .profile-card.background-dark .profile-decor { color: #fff; text-shadow: 0 1px 8px rgba(0,0,0,.42); }
     .profile-card.background-dark .week-strip { border-color: rgba(255,255,255,.38); background: rgba(0,0,0,.23); }
     .profile-card.background-dark .day { color: rgba(255,255,255,.82); }

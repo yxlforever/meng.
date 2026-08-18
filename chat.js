@@ -46,6 +46,8 @@
     const threadAvatar = document.getElementById('threadAvatar');
     const messageArea = document.getElementById('messageArea');
     const messageInput = document.getElementById('messageInput');
+    const MESSAGE_PAGE_SIZE = 50;
+    let visibleMessageCount = MESSAGE_PAGE_SIZE;
     const scrollMessagesToBottom = () => {
       requestAnimationFrame(() => {
         messageArea.scrollTop = messageArea.scrollHeight;
@@ -84,10 +86,31 @@
       }
       messageArea.append(item);
     };
-    const renderMessages = conversation => {
+    const renderMessages = (conversation, preservePosition = false) => {
+      const messages = conversation.messages || [];
+      const startIndex = Math.max(0, messages.length - visibleMessageCount);
+      const previousHeight = messageArea.scrollHeight;
+      const previousTop = messageArea.scrollTop;
       messageArea.replaceChildren();
-      (conversation.messages || []).forEach(message => appendMessage(conversation, message));
-      scrollMessagesToBottom();
+      if (startIndex > 0) {
+        const loadEarlier = document.createElement('button');
+        loadEarlier.type = 'button';
+        loadEarlier.className = 'load-earlier-messages';
+        loadEarlier.textContent = `点击加载更早消息（还有 ${startIndex} 条）`;
+        loadEarlier.addEventListener('click', () => {
+          visibleMessageCount += MESSAGE_PAGE_SIZE;
+          renderMessages(conversation, true);
+        });
+        messageArea.append(loadEarlier);
+      }
+      messages.slice(startIndex).forEach(message => appendMessage(conversation, message));
+      if (preservePosition) {
+        requestAnimationFrame(() => {
+          messageArea.scrollTop = previousTop + messageArea.scrollHeight - previousHeight;
+        });
+      } else {
+        scrollMessagesToBottom();
+      }
     };
     const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
     const getImportedEmojis = () => (state.emojiCategories || []).flatMap(category => category.items || []).filter(item => item?.url);
@@ -159,6 +182,7 @@
     };
     const openThread = conversation => {
       state.currentConversationId = conversation.id;
+      visibleMessageCount = MESSAGE_PAGE_SIZE;
       threadName.textContent = conversation.name;
       threadAvatar.innerHTML = avatarMarkup(conversation.chatAvatar);
       applyThreadWallpaper(conversation);

@@ -130,6 +130,9 @@
     .thread-settings-group { border-top: 1px solid #e2e2de; }
     .thread-settings-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 58px; padding: 0 2px; border-bottom: 1px solid #e2e2de; }
     .message-area { display: flex; min-height: 0; flex: 1 1 auto; flex-direction: column; gap: 12px; padding: 25px 6px 18px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+    .load-earlier-messages { align-self: center; margin: -8px 0 4px; padding: 7px 14px; border: 0; border-radius: 999px; background: rgba(255,255,255,.72); color: #777772; font-size: 11px; cursor: pointer; box-shadow: 0 2px 9px rgba(30,30,28,.05); backdrop-filter: blur(8px); }
+    .load-earlier-messages:hover { background: rgba(255,255,255,.94); color: #444440; }
+    .load-earlier-messages:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
     .message { display: flex; max-width: 82%; align-items: flex-start; gap: 8px; }
     .message.incoming { align-self: flex-start; }
     .message.outgoing { align-self: flex-end; flex-direction: row-reverse; }
