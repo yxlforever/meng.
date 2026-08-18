@@ -1,4 +1,10 @@
-document.getElementById('chatApp').addEventListener('click', () => {
+(() => {
+    const chatRoot = document.getElementById('chatPage');
+    const threadRoot = document.getElementById('threadPage');
+    const settingsRoot = document.getElementById('threadSettingsPage');
+    if (!chatRoot || !threadRoot || !settingsRoot) return;
+
+    document.getElementById('chatApp').addEventListener('click', () => {
       document.body.classList.add('show-chat');
       document.getElementById('chatPage').classList.add('active');
     });
@@ -59,6 +65,7 @@ document.getElementById('chatApp').addEventListener('click', () => {
         item.innerHTML = `<span class="message-avatar">${avatarMarkup(messageAvatar)}</span><span class="message-bubble"></span>`;
         const bubble = item.querySelector('.message-bubble');
         if (message.imageUrl) {
+          item.classList.add('image-message');
           bubble.classList.add('image-bubble');
           const image = document.createElement('img');
           image.src = message.imageUrl;
@@ -83,41 +90,62 @@ document.getElementById('chatApp').addEventListener('click', () => {
       const minDelay = Math.max(1, Number(conversation.replyMin) || 3);
       const maxDelay = Math.max(minDelay, Number(conversation.replyMax) || 10);
       const emojiProbability = Math.min(100, Math.max(0, Number(conversation.emojiProbability) || 0));
+      const delay = randomBetween(minDelay, maxDelay) * 1000;
       conversation.pendingReplies = (conversation.pendingReplies || 0) + count;
-      const sendReply = index => {
-        if (index >= count) {
-          conversation.pendingReplies = Math.max(0, (conversation.pendingReplies || 0) - count);
-          saveState();
-          return;
-        }
-        const delay = randomBetween(minDelay, maxDelay) * 1000;
-        window.setTimeout(() => {
-          const card = cards[randomBetween(0, cards.length - 1)];
-          const importedEmojis = getImportedEmojis();
-          const shouldSendEmoji = importedEmojis.length > 0 && Math.random() * 100 < emojiProbability;
+      window.setTimeout(() => {
+        const importedEmojis = getImportedEmojis();
+        const sendReply = index => {
           conversation.messages = conversation.messages || [];
+          const shouldSendEmoji = importedEmojis.length > 0 && Math.random() * 100 < emojiProbability;
           if (shouldSendEmoji) {
             const emoji = importedEmojis[randomBetween(0, importedEmojis.length - 1)];
             conversation.messages.push({ imageUrl: emoji.url, imageName: emoji.name, mine: false });
           } else {
+            const card = cards[randomBetween(0, cards.length - 1)];
             conversation.messages.push({ text: card, mine: false });
           }
+          conversation.pendingReplies = Math.max(0, (conversation.pendingReplies || 0) - 1);
           if (state.currentConversationId === conversation.id) renderMessages(conversation);
           saveState();
-          sendReply(index + 1);
-        }, delay);
-      };
-      sendReply(0);
+          if (index + 1 < count) window.setTimeout(() => sendReply(index + 1), randomBetween(450, 1400));
+        };
+        sendReply(0);
+      }, delay);
     };
-    let threadWallpaperUrl = '';
-    const applyThreadWallpaper = conversation => {
-      if (threadWallpaperUrl?.startsWith('blob:')) URL.revokeObjectURL(threadWallpaperUrl);
+    let wallpaperRenderId = 0;
+    const setThreadWallpaperStyles = url => {
+      threadPage.style.backgroundImage = url ? `url("${url}")` : '';
+      threadPage.style.backgroundSize = url ? 'cover' : '';
+      threadPage.style.backgroundPosition = url ? 'center' : '';
+      threadPage.style.backgroundRepeat = url ? 'no-repeat' : '';
+    };
+    const readImageAsDataUrl = file => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.addEventListener('load', () => resolve(String(reader.result || '')));
+      reader.addEventListener('error', () => reject(reader.error));
+      reader.readAsDataURL(file);
+    });
+    const applyThreadWallpaper = async conversation => {
+      const renderId = ++wallpaperRenderId;
       const wallpaper = conversation?.wallpaper;
-      threadWallpaperUrl = typeof wallpaper === 'string' ? wallpaper : wallpaper ? URL.createObjectURL(wallpaper) : '';
-      threadPage.style.backgroundImage = threadWallpaperUrl ? `url("${threadWallpaperUrl}")` : '';
-      threadPage.style.backgroundSize = threadWallpaperUrl ? 'cover' : '';
-      threadPage.style.backgroundPosition = threadWallpaperUrl ? 'center' : '';
-      threadPage.style.backgroundRepeat = threadWallpaperUrl ? 'no-repeat' : '';
+      if (!wallpaper) {
+        setThreadWallpaperStyles('');
+        return;
+      }
+      if (typeof wallpaper === 'string') {
+        setThreadWallpaperStyles(wallpaper);
+        return;
+      }
+      try {
+        const dataUrl = await readImageAsDataUrl(wallpaper);
+        if (renderId !== wallpaperRenderId) return;
+        conversation.wallpaper = dataUrl;
+        setThreadWallpaperStyles(dataUrl);
+        saveState();
+      } catch (error) {
+        console.warn('无法读取聊天壁纸。', error);
+        if (renderId === wallpaperRenderId) setThreadWallpaperStyles('');
+      }
     };
     const openThread = conversation => {
       state.currentConversationId = conversation.id;
@@ -226,16 +254,21 @@ document.getElementById('chatApp').addEventListener('click', () => {
     });
     document.getElementById('openCardLibrary').addEventListener('click', openCardLibrary);
     document.getElementById('changeThreadWallpaper').addEventListener('click', () => threadWallpaperInput.click());
-    threadWallpaperInput.addEventListener('change', event => {
+    threadWallpaperInput.addEventListener('change', async event => {
       const [file] = event.target.files;
       const conversation = state.conversations.find(item => item.id === state.currentConversationId);
       if (!file || !conversation) return;
-      conversation.wallpaper = file;
-      conversation.wallpaperName = file.name;
-      applyThreadWallpaper(conversation);
-      updateThreadWallpaperControls(conversation);
-      saveState();
-      threadWallpaperInput.value = '';
+      try {
+        conversation.wallpaper = await readImageAsDataUrl(file);
+        conversation.wallpaperName = file.name;
+        await applyThreadWallpaper(conversation);
+        updateThreadWallpaperControls(conversation);
+        saveState();
+      } catch (error) {
+        console.warn('无法设置聊天壁纸。', error);
+      } finally {
+        threadWallpaperInput.value = '';
+      }
     });
     removeThreadWallpaper.addEventListener('click', () => {
       const conversation = state.conversations.find(item => item.id === state.currentConversationId);
@@ -542,3 +575,10 @@ document.getElementById('chatApp').addEventListener('click', () => {
         returnHome();
       }
     });
+    window.initializeChatApp = () => {
+      state.emojiCategories = Array.isArray(state.emojiCategories) ? state.emojiCategories : [];
+      state.conversations = Array.isArray(state.conversations) ? state.conversations : [];
+      renderEmojiPanel();
+      renderConversations();
+    };
+})();

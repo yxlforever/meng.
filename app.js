@@ -16,9 +16,8 @@ const applySavedState = savedState => {
       }
       if (state.wallpaper) applyWallpaper(state.wallpaper, state.wallpaperName);
       if (state.globalFont) applyGlobalFont(state.globalFont, state.globalFontName);
-      state.emojiCategories = Array.isArray(state.emojiCategories) ? state.emojiCategories : [];
-      renderEmojiPanel();
-      renderConversations();
+      window.initializeChatApp?.();
+      window.renderTransmissions?.();
     };
 
     openDatabase().then(readState).then(applySavedState).catch(error => {

@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="settings.css" />
   <link rel="stylesheet" href="beautify.css" />
   <link rel="stylesheet" href="chat.css" />
+  <link rel="stylesheet" href="transmission.css" />
 </head>
 <body>
   <main class="settings-page" id="settingsPage" aria-label="设置页面">
@@ -121,7 +122,7 @@
       </div>
     </form>
   </div>
-  <main class="chat-page transmission-page" id="transmissionPage" aria-label="传讯页面">
+  <main class="chat-page transmission-page" id="transmissionPage" data-app="transmission" aria-label="传讯页面">
     <header class="chat-heading">
       <h1 class="chat-title" id="transmissionBack" role="button" tabindex="0" aria-label="返回主页">Transmission</h1>
     </header>
@@ -146,7 +147,7 @@
       </div>
     </form>
   </div>
-  <main class="thread-page transmission-thread-page" id="transmissionThreadPage" aria-label="传讯对话页面">
+  <main class="thread-page transmission-thread-page" id="transmissionThreadPage" data-app="transmission" aria-label="传讯对话页面">
     <header class="thread-heading">
       <button class="thread-back" id="transmissionThreadBack" type="button" aria-label="返回传讯列表"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button>
       <div class="thread-person"><button class="thread-avatar" id="transmissionAvatar" type="button" aria-label="聊天头像"></button><h1 class="thread-name" id="transmissionName">传讯</h1></div>
@@ -200,7 +201,7 @@
       <div class="tarot-reading-content" id="transmissionReadingContent"></div>
     </section>
   </div>
-  <main class="thread-settings-page" id="transmissionSettingsPage" aria-label="传讯聊天设置页面">
+  <main class="thread-settings-page transmission-settings-page" id="transmissionSettingsPage" data-app="transmission" aria-label="传讯聊天设置页面">
     <header class="thread-settings-heading">
       <button class="thread-settings-back" id="transmissionSettingsBack" type="button" aria-label="返回传讯聊天"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
       <h1 class="thread-settings-title">Chat Settings</h1>
@@ -241,7 +242,7 @@
       </div>
     </form>
   </div>
-  <main class="chat-page" id="chatPage" aria-label="聊天页面">
+  <main class="chat-page" id="chatPage" data-app="chat" aria-label="聊天页面">
     <header class="chat-heading">
       <h1 class="chat-title" id="chatBack" role="button" tabindex="0" aria-label="返回主页">my love</h1>
     </header>
@@ -266,7 +267,7 @@
       </div>
     </form>
   </div>
-  <main class="thread-page" id="threadPage" aria-label="对话页面">
+  <main class="thread-page" id="threadPage" data-app="chat" aria-label="对话页面">
     <header class="thread-heading">
       <button class="thread-back" id="threadBack" type="button" aria-label="返回 Notes"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button>
       <div class="thread-person"><button class="thread-avatar" id="threadAvatar" type="button" aria-label="打开聊天设置"></button><h1 class="thread-name" id="threadName">对话</h1></div>
@@ -323,7 +324,7 @@
       </div>
     </form>
   </div>
-  <main class="thread-settings-page" id="threadSettingsPage" aria-label="聊天设置页面">
+  <main class="thread-settings-page" id="threadSettingsPage" data-app="chat" aria-label="聊天设置页面">
     <header class="thread-settings-heading">
       <button class="thread-settings-back" id="threadSettingsBack" type="button" aria-label="返回聊天"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
       <h1 class="thread-settings-title">Chat Settings</h1>

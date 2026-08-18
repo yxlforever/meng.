@@ -1,5 +1,5 @@
 (() => {
-  const page = document.getElementById('transmissionPage');
+  const page = document.querySelector('[data-app="transmission"]#transmissionPage');
   const threadPage = document.getElementById('transmissionThreadPage');
   const list = document.getElementById('transmissionList');
   const modal = document.getElementById('transmissionModal');
