@@ -117,7 +117,8 @@
     .card-library-modal { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 24px; background: rgba(28,28,27,.32); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
     .card-library-modal.open { opacity: 1; pointer-events: auto; }
     .card-library-dialog { width: min(100%, 520px); max-height: min(78dvh, 620px); padding: 24px 22px 18px; overflow: hidden; border: 1px solid #e4e4df; border-radius: 20px; background: #fff; box-shadow: 0 20px 52px rgba(21,21,19,.18); }
-    .card-library-title { margin: 0 0 18px; color: #252523; font-size: 18px; font-weight: 700; text-align: center; }
+    .card-library-title { display: flex; align-items: center; justify-content: center; gap: 7px; margin: 0 0 18px; color: #252523; font-size: 18px; font-weight: 700; text-align: center; }
+    .card-library-count { display: inline-grid; min-width: 22px; height: 22px; padding: 0 6px; place-items: center; border-radius: 999px; background: #d8d8d5; color: #666662; font-size: 12px; font-weight: 700; line-height: 1; }
     .card-library-list { display: grid; max-height: 45dvh; overflow-y: auto; border-top: 1px solid #e2e2de; border-bottom: 1px solid #e2e2de; }
     .card-library-item { min-height: 46px; padding: 13px 4px; border: 0; border-bottom: 1px solid #efefeb; background: transparent; color: #4e4e4a; font-size: 14px; line-height: 1.45; text-align: left; white-space: pre-wrap; }
     .card-library-item:last-child { border-bottom: 0; }

@@ -112,7 +112,21 @@
         scrollMessagesToBottom();
       }
     };
-    const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const randomBetween = (min, max) => {
+      const lower = Math.ceil(min);
+      const upper = Math.floor(max);
+      const range = upper - lower + 1;
+      if (range <= 1) return lower;
+      const limit = Math.floor(0x100000000 / range) * range;
+      const value = new Uint32Array(1);
+      do crypto.getRandomValues(value); while (value[0] >= limit);
+      return lower + (value[0] % range);
+    };
+    const randomFloat = () => {
+      const value = new Uint32Array(1);
+      crypto.getRandomValues(value);
+      return value[0] / 0x100000000;
+    };
     const getImportedEmojis = () => (state.emojiCategories || []).flatMap(category => category.items || []).filter(item => item?.url);
     const scheduleAutoReplies = conversation => {
       const cards = (conversation.replyCards || []).filter(Boolean);
@@ -129,7 +143,7 @@
         const importedEmojis = getImportedEmojis();
         const sendReply = index => {
           conversation.messages = conversation.messages || [];
-          const shouldSendEmoji = importedEmojis.length > 0 && Math.random() * 100 < emojiProbability;
+          const shouldSendEmoji = importedEmojis.length > 0 && randomFloat() * 100 < emojiProbability;
           if (shouldSendEmoji) {
             const emoji = importedEmojis[randomBetween(0, importedEmojis.length - 1)];
             conversation.messages.push({ imageUrl: emoji.url, imageName: emoji.name, mine: false });
@@ -221,11 +235,14 @@
     const cardLibraryModal = document.getElementById('cardLibraryModal');
     const cardLibraryDialog = document.getElementById('cardLibraryDialog');
     const cardLibraryList = document.getElementById('cardLibraryList');
+    const cardLibraryCount = document.getElementById('cardLibraryCount');
     const cardLibraryEditor = document.getElementById('cardLibraryEditor');
     const cardLibraryFile = document.getElementById('cardLibraryFile');
     let selectedAvatarTarget = null;
     let cardLibraryDraft = [];
     const renderCardLibrary = cards => {
+      cardLibraryCount.textContent = cards.length;
+      cardLibraryCount.setAttribute('aria-label', `字卡数量：${cards.length}`);
       cardLibraryList.replaceChildren();
       (cards.length ? cards : ['暂无字卡']).forEach(text => {
         const item = document.createElement('div');
@@ -320,6 +337,11 @@
       cardLibraryEditor.value = cardLibraryDraft.join('\n');
       cardLibraryDialog.classList.add('editing');
       cardLibraryEditor.focus();
+    });
+    cardLibraryEditor.addEventListener('input', () => {
+      const count = cardLibraryEditor.value.split(/\r?\n/).map(item => item.trim()).filter(Boolean).length;
+      cardLibraryCount.textContent = count;
+      cardLibraryCount.setAttribute('aria-label', `字卡数量：${count}`);
     });
     document.getElementById('cardLibrarySave').addEventListener('click', () => {
       const conversation = state.conversations.find(item => item.id === state.currentConversationId);
