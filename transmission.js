@@ -429,19 +429,70 @@
       cards,
       cardCount: String(tarotMessage?.tarotCards?.length || 0),
       date: now.toLocaleDateString('zh-CN'),
-      time: now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+      time: now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+      bubbleOutput: bubbleOutputInstruction,
+      readingOutput: readingOutputInstruction,
+      outputFormat: outputFormatInstruction
     };
   };
 
+  const bubbleOutputInstruction = `将面向用户展示的传讯内容写入 JSON 的 "bubbles" 数组。数组每一项是一条独立聊天气泡；请根据语意自行自然分段，不需要控制每段长度，客户端会继续拆分过长内容。`;
+  const readingOutputInstruction = `将不直接显示在聊天气泡中的详细牌义、正逆位、牌面联系和推演依据写入 JSON 的 "reading" 字符串；这部分仅在用户点击“解牌说明”后展示。`;
+  const outputFormatInstruction = `必须严格输出 JSON，不要输出 Markdown 代码围栏或其他文字：
+{
+  "bubbles": ["面向用户的传讯内容，可返回一条或多条"],
+  "reading": "仅供点击解牌说明查看的详细解读"
+}
+${bubbleOutputInstruction}
+${readingOutputInstruction}`;
+
   const renderPromptTemplate = (template, variables) => template.replace(
-    /\\{\\{\\s*([a-zA-Z][\\w]*)\\s*\\}\\}/g,
+    /\{\{\s*([a-zA-Z][\w]*)\s*\}\}/g,
     (placeholder, name) => Object.hasOwn(variables, name) ? String(variables[name]) : placeholder
   );
+
+  const splitLongBubble = text => {
+    const normalized = String(text || '').replace(/\r/g, '').trim();
+    if (!normalized) return [];
+    const maxLength = 90;
+    if (normalized.length <= maxLength) return [normalized];
+    const parts = [];
+    let remaining = normalized;
+    while (remaining.length > maxLength) {
+      const window = remaining.slice(0, maxLength + 1);
+      const breakAt = Math.max(
+        window.lastIndexOf('。'), window.lastIndexOf('！'), window.lastIndexOf('？'),
+        window.lastIndexOf('…'), window.lastIndexOf('；'), window.lastIndexOf('，'),
+        window.lastIndexOf(' '), window.lastIndexOf('\n')
+      );
+      const cutAt = breakAt >= Math.floor(maxLength * .55) ? breakAt + 1 : maxLength;
+      parts.push(remaining.slice(0, cutAt).trim());
+      remaining = remaining.slice(cutAt).trim();
+    }
+    if (remaining) parts.push(remaining);
+    return parts;
+  };
+
+  const parseTarotResponse = responseText => {
+    const cleaned = responseText.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+    try {
+      const parsed = JSON.parse(cleaned);
+      const bubbles = Array.isArray(parsed.bubbles)
+        ? parsed.bubbles.flatMap(splitLongBubble)
+        : [];
+      const reading = typeof parsed.reading === 'string' ? parsed.reading.trim() : '';
+      if (!bubbles.length || !reading) throw new Error('AI 返回内容缺少 bubbles 或 reading');
+      return { bubbles, reading };
+    } catch (error) {
+      throw new Error(`AI 未按要求返回格式：${error.message}`);
+    }
+  };
 
   const requestTarotReply = async conversation => {
     const apiSettings = window.getDreamApiSettings?.();
     const waitingMessage = { text: '正在倾听牌的回音…', mine: false, waiting: true };
     let responseText = '';
+    let parsedReply = null;
     conversation.messages.push(waitingMessage);
     waitingForReply = true;
     waitButton.disabled = true;
@@ -454,10 +505,11 @@
         role: message.mine ? 'user' : 'assistant',
         content: message.text
       }));
-      const systemPrompt = renderPromptTemplate(
-        conversation.systemPrompt?.trim() || '',
-        getPromptVariables(conversation)
-      );
+      const promptTemplate = conversation.systemPrompt?.trim() || '';
+      const renderedPrompt = renderPromptTemplate(promptTemplate, getPromptVariables(conversation));
+      const systemPrompt = /\{\{\s*outputFormat\s*\}\}/i.test(promptTemplate)
+        ? renderedPrompt
+        : [renderedPrompt, outputFormatInstruction].filter(Boolean).join('\n\n');
       const response = await fetch(`${apiSettings.apiUrl.replace(/\/+$/, '')}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -501,14 +553,16 @@
         responseText = payload.choices?.[0]?.message?.content || '';
       }
       if (!responseText.trim()) throw new Error('API 没有返回回复内容');
+      parsedReply = parseTarotResponse(responseText);
       waitingMessage.waiting = false;
     } catch (error) {
       waitingMessage.text = `暂时没有收到回音：${error.message}`;
       waitingMessage.waiting = false;
     } finally {
-      if (responseText.trim()) {
-        waitingMessage.text = responseText.trim();
-        waitingMessage.waiting = false;
+      if (parsedReply) {
+        conversation.messages = conversation.messages.filter(message => message !== waitingMessage);
+        parsedReply.bubbles.forEach(text => conversation.messages.push({ text, mine: false }));
+        conversation.messages.push({ text: parsedReply.reading, mine: false, reading: true });
       }
       waitingForReply = false;
       waitButton.disabled = false;

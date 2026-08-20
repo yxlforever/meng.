@@ -258,7 +258,7 @@
   <div class="note-modal" id="transmissionPromptModal" role="dialog" aria-modal="true" aria-labelledby="transmissionPromptTitle" aria-hidden="true">
     <form class="note-dialog transmission-prompt-dialog" id="transmissionPromptForm">
       <h2 class="note-dialog-title" id="transmissionPromptTitle">自定义 systemPrompt</h2>
-      <p class="note-dialog-copy transmission-prompt-copy">这里填写的内容将作为当前传讯会话唯一的 systemPrompt。可用变量：<code>{{chatName}}</code> 传讯对象名称、<code>{{userName}}</code> 用户名称、<code>{{divinerName}}</code> 占卜师名称、<code>{{currentQuestion}}</code> 最新一轮普通消息、<code>{{cards}}</code> 本次抽牌结果、<code>{{cardCount}}</code> 抽牌数量、<code>{{date}}</code> 当前日期、<code>{{time}}</code> 当前时间。</p>
+      <p class="note-dialog-copy transmission-prompt-copy">这里填写的内容将作为当前传讯会话唯一的 systemPrompt。可用变量：<code>{{chatName}}</code> 传讯对象名称、<code>{{userName}}</code> 用户名称、<code>{{divinerName}}</code> 占卜师名称、<code>{{currentQuestion}}</code> 最新一轮普通消息、<code>{{cards}}</code> 本次抽牌结果、<code>{{cardCount}}</code> 抽牌数量、<code>{{date}}</code> 当前日期、<code>{{time}}</code> 当前时间、<code>{{bubbleOutput}}</code> 气泡内容的输出位置和分段要求、<code>{{readingOutput}}</code> 解牌说明的输出位置和内容范围、<code>{{outputFormat}}</code> 两者合并后的完整格式。气泡不需要在提示词中规定如何分段，AI 会自行分段，过长内容前端也会自动拆分。</p>
       <textarea class="transmission-prompt-input" id="transmissionPromptInput" maxlength="5000" placeholder="填写自定义 systemPrompt" aria-label="自定义 systemPrompt"></textarea>
       <div class="note-dialog-actions">
         <button class="note-dialog-button" id="transmissionPromptCancel" type="button">取消</button>
